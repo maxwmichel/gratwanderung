@@ -1,0 +1,1303 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>GRATWANDERUNG – Responsible Innovation als Regulator</title>
+
+<!-- Google Fonts mit Offline-Fallbacks: Fraunces→Georgia, IBM Plex Mono→Courier New.
+     Alle font-family-Deklarationen listen die Fallbacks, daher offline lauffähig. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   DESIGN-SYSTEM "DIE AKTE" (Farb-Tokens)
+   ============================================================ */
+:root{
+  --bg:      #EFE6D0;   /* Altpapier */
+  --card:    #FBF6E9;   /* Kartenpapier */
+  --ink:     #2A241C;   /* Tinte */
+  --ink-2:   #7A6F5C;   /* Sekundärtinte */
+  --ocker:   #C87F1D;   /* Siegel-Ocker */
+
+  /* Meter-Farben (gedeckt) */
+  --m-w: #4A7C59;  /* Wirtschaft & Innovation      – Moosgrün  */
+  --m-v: #3D6B8E;  /* Vertrauen der Bevölkerung    – Stahlblau */
+  --m-g: #B4453A;  /* Grundrechte & Sicherheit     – Ziegelrot */
+  --m-s: #6E5A8E;  /* Techn. Souveränität          – Aubergine */
+
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --mono:  "IBM Plex Mono", "Courier New", Courier, monospace;
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html,body{ height:100%; margin:0; }
+
+body{
+  background-color:var(--bg);
+  color:var(--ink);
+  font-family:var(--mono);
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Subtile Papierstruktur: inline-SVG-Noise (feTurbulence) als data-URI */
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:0.04;
+}
+
+#app{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:480px;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+}
+
+/* ============================================================
+   KOPFBEREICH
+   ============================================================ */
+.brand{ text-align:center; flex:0 0 auto; padding-top:4px; }
+.brand h1{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:clamp(20px, 5.6vw, 27px);
+  letter-spacing:.1em;
+  margin:0;
+  color:var(--ink);
+}
+/* Grat-Symbol: dünne Tintenlinie mit Ocker-Balancepunkt */
+.grat{
+  position:relative;
+  height:12px;
+  margin:6px auto 0;
+  width:min(260px, 70%);
+}
+.grat::before{
+  content:""; position:absolute; top:50%; left:0; right:0;
+  height:1px; background:var(--ink);
+  opacity:.55;
+}
+.grat::after{
+  content:""; position:absolute; top:50%; left:50%;
+  width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:50%;
+  background:var(--ocker); border:1.5px solid var(--ink);
+}
+.subtitle{
+  color:var(--ink-2); font-size:9.5px; letter-spacing:.22em;
+  text-transform:uppercase;
+  margin-top:7px;
+}
+
+/* ============================================================
+   AMTSSIEGEL-LEISTE
+   ============================================================ */
+.meters{
+  flex:0 0 auto;
+  display:flex; justify-content:space-between; gap:8px;
+  margin:14px 2px 4px;
+}
+.meter{
+  flex:1; position:relative;
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding-top:10px;
+}
+.meter .seal{
+  width:52px; height:52px; display:block;
+}
+/* Meter-Akzentfarbe als currentColor (für Warnring) */
+.meter.m-w{ color:var(--m-w); }
+.meter.m-v{ color:var(--m-v); }
+.meter.m-g{ color:var(--m-g); }
+.meter.m-s{ color:var(--m-s); }
+.meter .fillmove{
+  transition:transform .4s cubic-bezier(.2,.7,.2,1);
+}
+/* Warnring: erscheint, wenn ein Wert sich 0 oder 100 nähert */
+.meter .warnring{
+  opacity:0; transition:opacity .3s;
+}
+.meter.warn .warnring{
+  opacity:1; animation:warnPulse 1s infinite;
+}
+@keyframes warnPulse{ 0%,100%{opacity:.35} 50%{opacity:1} }
+.meter .icon{
+  transform-box:fill-box; transform-origin:center;
+}
+.meter .icon.bounce{ animation:iconBounce .4s cubic-bezier(.2,.7,.2,1); }
+@keyframes iconBounce{
+  0%{ transform:scale(1); } 45%{ transform:scale(1.15); } 100%{ transform:scale(1); }
+}
+/* Unsicherheits-Preview: Tintenpunkt über dem Siegel — nur WELCHE Meter, nie Richtung */
+.meter .dot{
+  position:absolute; top:0; left:50%;
+  transform:translateX(-50%) scale(0);
+  width:7px; height:7px; border-radius:50%;
+  background:var(--ink);
+  transition:transform .18s ease;
+}
+.meter .dot.show{ transform:translateX(-50%) scale(1); animation:dotPulse 1s infinite; }
+@keyframes dotPulse{ 0%,100%{opacity:.45} 50%{opacity:1} }
+.meter .lbl{
+  font-family:var(--mono);
+  font-size:9px; letter-spacing:.06em; color:var(--ink-2);
+  text-align:center; text-transform:uppercase; line-height:1.25;
+  min-height:22px; display:flex; align-items:center;
+}
+
+/* ============================================================
+   KARTEN-BEREICH
+   ============================================================ */
+.stage{
+  flex:1 1 auto;
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  min-height:0;
+  margin:8px 0 6px;
+}
+
+.card{
+  position:absolute;
+  width:100%;
+  max-width:400px;
+  background:var(--card);
+  border:2px solid var(--ink);
+  border-radius:6px;
+  box-shadow:4px 4px 0 rgba(42,36,28,0.15);
+  padding:22px 22px 18px;
+  display:flex; flex-direction:column; align-items:center;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  will-change:transform;
+  transform-origin:50% 120%;
+  z-index:2;
+  max-height:100%;
+}
+/* Dilemma-Text darf bei wenig Platz intern scrollen statt zu überlappen */
+.card .text{
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+/* Ereignis-Modus: Karte rückt hoch, damit der Quittier-Button nicht überlappt */
+body.event-mode .card{ margin-bottom:56px; }
+.card.dragging{ transition:none !important; cursor:grabbing; }
+
+/* Stapelkarten, die hinter der aktiven Karte hervorlugen */
+.card.ghost{
+  pointer-events:none;
+  box-shadow:3px 3px 0 rgba(42,36,28,0.12);
+}
+.card.ghost.g1{ z-index:1; transform:translate(3px,4px) rotate(1.4deg); }
+.card.ghost.g2{ z-index:0; transform:translate(-2px,7px) rotate(-1.8deg); }
+
+/* Ereigniskarte: Ocker-Rand */
+.card.event{
+  border-color:var(--ocker);
+  box-shadow:4px 4px 0 rgba(200,127,29,0.22);
+  cursor:default;
+}
+
+/* --- Kartenelemente --- */
+.card .portrait{
+  width:72px; height:72px; flex:0 0 auto;
+  margin-bottom:10px;
+}
+.card .portrait svg{ width:100%; height:100%; display:block; }
+.card .rolle{
+  font-family:var(--mono);
+  font-size:10.5px; font-weight:600; letter-spacing:.24em;
+  text-transform:uppercase; color:var(--ink);
+  margin-bottom:10px; text-align:center;
+}
+.card .titel{
+  font-family:var(--mono);
+  font-weight:600; text-transform:uppercase; letter-spacing:.14em;
+  font-size:13px; color:var(--ocker); margin:0 0 12px;
+  text-align:center;
+}
+.card .text{
+  font-family:var(--serif);
+  font-size:18px; line-height:1.5; color:var(--ink);
+  margin:0; flex:1 1 auto; display:flex; align-items:center;
+  text-align:center;
+}
+/* Options-Legende: zeigt dauerhaft, welche Option links/rechts liegt
+   (wichtig für Pfeiltasten-Steuerung) */
+.card .opts{
+  display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+  width:100%; margin-top:14px; padding-top:10px;
+  border-top:1px dashed rgba(42,36,28,0.35);
+  font-family:var(--mono);
+  font-size:10px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; line-height:1.4;
+}
+.card .opts .opt{ max-width:48%; }
+.card .opts .opt-left{  color:var(--m-g);  text-align:left; }
+.card .opts .opt-right{ color:var(--ocker); text-align:right; }
+
+.card .year{
+  font-family:var(--mono);
+  color:var(--ink-2); font-size:10px; letter-spacing:.2em;
+  margin-top:12px; text-transform:uppercase;
+}
+
+/* Konzept-Overlay-Tag (Demo-Modus): Karteikarten-Reiter-Optik */
+.card .konzept-tag{
+  display:none;
+  margin-top:10px;
+  font-family:var(--mono);
+  font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink);
+  background:rgba(200,127,29,0.12);
+  border:1px solid var(--ocker);
+  border-radius:2px;
+  padding:3px 10px;
+  text-align:center;
+}
+body.concept-on .card .konzept-tag{ display:inline-block; }
+
+/* --- Gummistempel (erscheinen beim Ziehen) --- */
+.stamp{
+  position:absolute; top:16px;
+  font-family:var(--mono);
+  font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+  font-size:12.5px; line-height:1.25;
+  padding:7px 11px;
+  border:2.5px solid currentColor;
+  border-radius:3px;
+  box-shadow:inset 0 0 0 2px var(--card), inset 0 0 0 3.5px currentColor;
+  background:rgba(251,246,233,0.75);
+  opacity:0; pointer-events:none;
+  max-width:46%;
+  z-index:3;
+}
+.stamp-right{ right:14px; transform:rotate(-12deg); color:var(--ocker); text-align:right; }
+.stamp-left{  left:14px;  transform:rotate(12deg);  color:var(--m-g);  text-align:left; }
+
+/* --- Ereigniskarte: Quer-Stempel + Verweis --- */
+.card .event-stamp{
+  position:absolute; top:44%; left:50%;
+  transform:translate(-50%,-50%) rotate(-11deg);
+  font-family:var(--mono); font-weight:600;
+  font-size:15px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--ocker);
+  border:2.5px solid var(--ocker); border-radius:3px;
+  box-shadow:inset 0 0 0 2px var(--card), inset 0 0 0 3.5px var(--ocker);
+  padding:8px 14px; white-space:nowrap;
+  opacity:.5; pointer-events:none; z-index:3;
+}
+.card .event-ref{
+  font-family:var(--mono);
+  color:var(--ocker); font-size:10px; letter-spacing:.18em;
+  text-transform:uppercase; margin-bottom:10px; text-align:center;
+}
+
+/* ============================================================
+   HINWEISE / BUTTONS UNTEN
+   ============================================================ */
+.hint{
+  flex:0 0 auto;
+  display:flex; justify-content:space-between; align-items:center;
+  color:var(--ink-2); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase;
+  padding:4px 2px 2px; min-height:30px;
+}
+.hint .arrows{ opacity:.85; }
+
+/* "Zur Kenntnis genommen"-Button für Ereigniskarten */
+.weiter-wrap{
+  flex:0 0 auto; text-align:center; height:0; overflow:visible;
+}
+.btn-weiter{
+  display:none;
+  margin:0 auto; padding:11px 26px;
+  background:var(--card); color:var(--ink);
+  border:2px solid var(--ink); border-radius:4px;
+  box-shadow:3px 3px 0 rgba(42,36,28,0.2);
+  font-family:var(--mono);
+  font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  font-size:12px; cursor:pointer;
+  transform:translateY(-56px);
+}
+.btn-weiter:active{ box-shadow:1px 1px 0 rgba(42,36,28,0.2); transform:translate(2px,-54px); }
+body.event-mode .btn-weiter{ display:inline-block; }
+body.event-mode .hint .arrows{ visibility:hidden; }
+
+/* Konzept-Overlay-Schalter: angeheftete Notiz mit Büroklammer */
+.toggle{
+  display:flex; align-items:center; gap:6px; cursor:pointer;
+  color:var(--ink-2); font-size:9.5px; letter-spacing:.1em;
+  background:var(--card);
+  border:1px solid var(--ink-2);
+  border-radius:2px;
+  padding:5px 10px 5px 6px;
+  transform:rotate(-1.2deg);
+  box-shadow:2px 2px 0 rgba(42,36,28,0.12);
+  position:relative;
+}
+.toggle svg{ width:14px; height:14px; flex:0 0 auto; }
+.toggle .state{ font-weight:600; color:var(--ink-2); }
+body.concept-on .toggle{ border-color:var(--ocker); color:var(--ink); }
+body.concept-on .toggle .state{ color:var(--ocker); }
+
+/* ============================================================
+   END-SCREEN "AKTE GESCHLOSSEN"
+   ============================================================ */
+#end{
+  position:absolute; inset:0; z-index:5;
+  background:var(--bg);
+  display:none; flex-direction:column; justify-content:center; align-items:center;
+  padding:30px 22px calc(30px + env(safe-area-inset-bottom));
+  text-align:center;
+}
+#end.show{ display:flex; }
+#end .end-card{
+  position:relative;
+  width:100%; max-width:420px;
+  background:var(--card);
+  border:2px solid var(--ink);
+  border-radius:6px;
+  box-shadow:4px 4px 0 rgba(42,36,28,0.15);
+  padding:56px 26px 30px;
+}
+#end .end-stamp{
+  position:absolute; top:-16px; left:50%;
+  transform:translateX(-50%) rotate(-7deg);
+  font-family:var(--mono); font-weight:600;
+  font-size:clamp(16px, 5vw, 21px); letter-spacing:.2em; text-transform:uppercase;
+  color:var(--m-g);
+  border:3px solid var(--m-g); border-radius:3px;
+  box-shadow:inset 0 0 0 2px var(--card), inset 0 0 0 4px var(--m-g);
+  background:var(--card);
+  padding:9px 16px; white-space:nowrap;
+}
+#end .kicker{
+  font-family:var(--mono);
+  color:var(--ink-2); letter-spacing:.24em; font-size:9.5px; font-weight:600;
+  text-transform:uppercase; margin-bottom:18px;
+}
+#end .headline{
+  font-family:var(--serif);
+  font-weight:600; font-size:clamp(19px, 5.6vw, 24px); line-height:1.35;
+  color:var(--ink); margin:0 auto 22px; max-width:380px;
+}
+#end .headline .rule{
+  display:block; width:56px; height:2px; background:var(--ocker);
+  margin:16px auto 0;
+}
+#end .score{
+  font-family:var(--mono); text-transform:uppercase; letter-spacing:.14em;
+  color:var(--ink); font-size:13px; margin-bottom:6px;
+}
+#end .score b{ color:var(--ocker); font-size:18px; }
+#end .high{
+  font-family:var(--mono); text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ink-2); font-size:10.5px; margin-bottom:22px;
+}
+#end .reflex{
+  font-family:var(--serif);
+  color:var(--ocker); font-size:14.5px; line-height:1.55; font-style:italic;
+  max-width:360px; margin:0 auto 26px;
+}
+#end .btn-restart{
+  padding:12px 34px;
+  background:var(--card); color:var(--ink);
+  border:2px solid var(--ink); border-radius:4px;
+  box-shadow:3px 3px 0 rgba(42,36,28,0.2);
+  font-family:var(--mono);
+  font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  font-size:13px; cursor:pointer;
+}
+#end .btn-restart:hover{ background:var(--ocker); color:var(--card); border-color:var(--ink); }
+#end .btn-restart:active{ box-shadow:1px 1px 0 rgba(42,36,28,0.2); transform:translate(2px,2px); }
+
+/* ============================================================
+   RESPONSIVE ANPASSUNGEN (schmale / niedrige Displays)
+   ============================================================ */
+@media (max-width:400px){
+  #app{ padding:10px 12px calc(10px + env(safe-area-inset-bottom)); }
+  .card{ padding:16px 15px 13px; }
+  .card .portrait{ width:56px; height:56px; margin-bottom:8px; }
+  .card .rolle{ font-size:9.5px; letter-spacing:.16em; margin-bottom:8px; }
+  .card .titel{ font-size:12px; letter-spacing:.1em; margin-bottom:10px; }
+  .card .text{ font-size:15.5px; }
+  .card .opts{ font-size:9px; }
+  .stamp{ font-size:11px; padding:5px 8px; }
+  .meters{ gap:5px; }
+  .meter .seal{ width:44px; height:44px; }
+  .meter .lbl{ font-size:7.5px; letter-spacing:.04em; }
+  .hint{ font-size:9px; }
+  .toggle{ font-size:8.5px; padding:4px 8px 4px 5px; }
+}
+@media (max-height:720px){
+  .brand{ padding-top:0; }
+  .brand h1{ font-size:19px; }
+  .subtitle{ margin-top:4px; }
+  .meters{ margin:9px 2px 2px; }
+  .meter{ padding-top:8px; gap:3px; }
+  .meter .seal{ width:44px; height:44px; }
+  .meter .lbl{ min-height:16px; }
+  .card{ padding:14px 16px 11px; }
+  .card .portrait{ width:50px; height:50px; margin-bottom:6px; }
+  .card .rolle{ margin-bottom:6px; }
+  .card .titel{ margin-bottom:8px; }
+  .card .text{ font-size:15px; }
+  .card .opts{ margin-top:10px; padding-top:8px; }
+  .card .year{ margin-top:8px; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Kopfbereich -->
+  <header class="brand">
+    <h1>GRATWANDERUNG</h1>
+    <div class="grat"></div>
+    <div class="subtitle">Amt f&uuml;r Technologiefolgen &middot; Nordavia</div>
+  </header>
+
+  <!-- Amtssiegel-Meter -->
+  <section class="meters" id="meters">
+    <div class="meter m-w" data-key="w">
+      <div class="dot"></div>
+      <svg class="seal" viewBox="0 0 48 48" aria-hidden="true">
+        <defs><clipPath id="clip-w"><circle cx="24" cy="24" r="21"/></clipPath></defs>
+        <g clip-path="url(#clip-w)">
+          <rect class="fillrect fillmove" x="0" y="0" width="48" height="48" fill="var(--m-w)" opacity="0.7"/>
+          <rect class="fillmove" x="0" y="-1" width="48" height="2.4" fill="var(--ink)" opacity="0.75"/>
+        </g>
+        <path d="M5 24h4M39 24h4" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.55"/>
+        <circle cx="24" cy="24" r="21" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <circle class="warnring" cx="24" cy="24" r="22.9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <g class="icon" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="20" cy="28" r="5.5"/>
+          <path d="M20 20.5v-3M20 38.5v-3M12.5 28h-3M27.5 28h3M14.7 22.7l-2.1-2.1M25.3 33.3l2.1 2.1M14.7 33.3l-2.1 2.1M25.3 22.7l2.1-2.1"/>
+          <path d="M27 19l8-6M35 13h-5M35 13v5"/>
+        </g>
+      </svg>
+      <div class="lbl">Wirtschaft &amp; Innovation</div>
+    </div>
+    <div class="meter m-v" data-key="v">
+      <div class="dot"></div>
+      <svg class="seal" viewBox="0 0 48 48" aria-hidden="true">
+        <defs><clipPath id="clip-v"><circle cx="24" cy="24" r="21"/></clipPath></defs>
+        <g clip-path="url(#clip-v)">
+          <rect class="fillrect fillmove" x="0" y="0" width="48" height="48" fill="var(--m-v)" opacity="0.7"/>
+          <rect class="fillmove" x="0" y="-1" width="48" height="2.4" fill="var(--ink)" opacity="0.75"/>
+        </g>
+        <path d="M5 24h4M39 24h4" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.55"/>
+        <circle cx="24" cy="24" r="21" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <circle class="warnring" cx="24" cy="24" r="22.9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <g class="icon" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 24l7-5 6 5M37 24l-7-5"/>
+          <path d="M18 24l7 6 5-4"/>
+          <path d="M22 29l-2.5 2.5M26 31l-2 2"/>
+        </g>
+      </svg>
+      <div class="lbl">Vertrauen der Bev&ouml;lkerung</div>
+    </div>
+    <div class="meter m-g" data-key="g">
+      <div class="dot"></div>
+      <svg class="seal" viewBox="0 0 48 48" aria-hidden="true">
+        <defs><clipPath id="clip-g"><circle cx="24" cy="24" r="21"/></clipPath></defs>
+        <g clip-path="url(#clip-g)">
+          <rect class="fillrect fillmove" x="0" y="0" width="48" height="48" fill="var(--m-g)" opacity="0.7"/>
+          <rect class="fillmove" x="0" y="-1" width="48" height="2.4" fill="var(--ink)" opacity="0.75"/>
+        </g>
+        <path d="M5 24h4M39 24h4" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.55"/>
+        <circle cx="24" cy="24" r="21" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <circle class="warnring" cx="24" cy="24" r="22.9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <g class="icon" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M24 13v22M18 35h12M15 17h18"/>
+          <path d="M15 17l-4 8h8zM33 17l-4 8h8z"/>
+        </g>
+      </svg>
+      <div class="lbl">Grundrechte &amp; Sicherheit</div>
+    </div>
+    <div class="meter m-s" data-key="s">
+      <div class="dot"></div>
+      <svg class="seal" viewBox="0 0 48 48" aria-hidden="true">
+        <defs><clipPath id="clip-s"><circle cx="24" cy="24" r="21"/></clipPath></defs>
+        <g clip-path="url(#clip-s)">
+          <rect class="fillrect fillmove" x="0" y="0" width="48" height="48" fill="var(--m-s)" opacity="0.7"/>
+          <rect class="fillmove" x="0" y="-1" width="48" height="2.4" fill="var(--ink)" opacity="0.75"/>
+        </g>
+        <path d="M5 24h4M39 24h4" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.55"/>
+        <circle cx="24" cy="24" r="21" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <circle class="warnring" cx="24" cy="24" r="22.9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <g class="icon" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 36V17h3v3h2.5v-3h3v3H28v-3h3v19"/>
+          <path d="M14 36h20"/>
+          <path d="M22 36v-6a2 2 0 014 0v6"/>
+        </g>
+      </svg>
+      <div class="lbl">Techn. Souver&auml;nit&auml;t</div>
+    </div>
+  </section>
+
+  <!-- Kartenbühne (Stapelkarten + aktive Karte per JS) -->
+  <section class="stage" id="stage">
+    <div class="card ghost g2" aria-hidden="true"></div>
+    <div class="card ghost g1" aria-hidden="true"></div>
+  </section>
+
+  <!-- Quittier-Button (nur Ereigniskarten) -->
+  <div class="weiter-wrap"><button class="btn-weiter" id="btnWeiter">Zur Kenntnis genommen</button></div>
+
+  <!-- Hinweiszeile / Toggle -->
+  <footer class="hint">
+    <span class="arrows">&larr; &rarr; oder wischen</span>
+    <label class="toggle" id="toggleConcept">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M8 7v9a4 4 0 008 0V6a3 3 0 00-6 0v9a1.6 1.6 0 003.2 0V7"/>
+      </svg>
+      <span>Konzept-Overlay</span>
+      <span class="state" id="toggleState">AUS</span>
+    </label>
+  </footer>
+
+  <!-- End-Screen "AKTE GESCHLOSSEN" -->
+  <div id="end">
+    <div class="end-card">
+      <div class="end-stamp">Akte geschlossen</div>
+      <div class="kicker">Nordavia Tagblatt &middot; Amtszeit beendet</div>
+      <div class="headline" id="endHeadline"></div>
+      <div class="score">Amtsjahre: <b id="endScore">0</b></div>
+      <div class="high" id="endHigh"></div>
+      <div class="reflex">&bdquo;Es gibt keine perfekte L&ouml;sung. Regulierung ist die Gratwanderung zwischen Parteilichkeit und Beliebigkeit.&ldquo;</div>
+      <button class="btn-restart" id="btnRestart">Neue Amtszeit</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+/* ================================================================
+   ZUSTAND
+   ================================================================ */
+const KEYS = ["w","v","g","s"];      // Wirtschaft, Vertrauen, Grundrechte, Souveränität
+let state, deck, queue, current, cardCount, isEvent;
+let sessionHighscore = 0;            // Highscore nur in JS-Variable (kein localStorage)
+
+/* ================================================================
+   CHARAKTERPORTRÄTS
+   Flache Inline-SVGs (Kopf + Schultern, Papier-Palette + 1 Akzent)
+   ================================================================ */
+const P_SKIN = "#EAC9A2", P_INK = "#2A241C", P_BG = "#F6F0DF", P_HAIR = "#4B3C2C";
+
+function portraitSVG(inner, clipId){
+  return `<svg viewBox="0 0 72 72" aria-hidden="true">
+    <defs><clipPath id="${clipId}"><circle cx="36" cy="36" r="33.5"/></clipPath></defs>
+    <circle cx="36" cy="36" r="34" fill="${P_BG}" stroke="${P_INK}" stroke-width="2"/>
+    <g clip-path="url(#${clipId})">${inner}</g>
+    <circle cx="36" cy="36" r="34" fill="none" stroke="${P_INK}" stroke-width="2"/>
+  </svg>`;
+}
+
+const PORTRAITS = {
+  LOBBYISTIN: { rolle:"Die Lobbyistin", svg: portraitSVG(`
+    <path d="M14 72 Q36 46 58 72 Z" fill="#C87F1D"/>
+    <rect x="32" y="38" width="8" height="10" fill="${P_SKIN}"/>
+    <circle cx="36" cy="30" r="13" fill="${P_SKIN}"/>
+    <path d="M22 33 Q20 12 36 12 Q52 12 50 33 L46 32 Q48 19 36 18 Q24 19 26 32 Z" fill="${P_HAIR}"/>
+    <circle cx="30" cy="30" r="4.5" fill="none" stroke="${P_INK}" stroke-width="1.8"/>
+    <circle cx="42" cy="30" r="4.5" fill="none" stroke="${P_INK}" stroke-width="1.8"/>
+    <path d="M34.5 30h3" stroke="${P_INK}" stroke-width="1.8"/>
+    <path d="M32 38q4 3 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-lob") },
+
+  MINISTER: { rolle:"Der Minister", svg: portraitSVG(`
+    <path d="M12 72 Q36 46 60 72 Z" fill="${P_INK}"/>
+    <path d="M31 50 L36 56 L41 50 L36 48 Z" fill="${P_BG}"/>
+    <path d="M34 54 L36 70 L38 54 L36 52 Z" fill="#B4453A"/>
+    <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
+    <circle cx="36" cy="29" r="13" fill="${P_SKIN}"/>
+    <path d="M23 30 Q23 14 36 15 Q49 14 49 30 L47 26 Q44 19 33 20 Q26 21 25 27 Z" fill="#8F8676"/>
+    <path d="M29 28h5M38 28h5" stroke="${P_INK}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M32 37q4 2.5 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-min") },
+
+  AKTIVISTIN: { rolle:"Die Aktivistin", svg: portraitSVG(`
+    <path d="M12 72 Q36 48 60 72 Z" fill="#B4453A"/>
+    <rect x="31" y="38" width="8" height="9" fill="${P_SKIN}"/>
+    <circle cx="34" cy="29" r="13" fill="${P_SKIN}"/>
+    <path d="M21 31 Q19 13 34 13 Q46 13 47 26 L43 24 Q41 17 33 18 Q24 19 25 31 Z" fill="${P_HAIR}"/>
+    <circle cx="45" cy="14" r="5" fill="${P_HAIR}"/>
+    <path d="M48 38 L62 30 L62 50 L48 42 Z" fill="#B4453A" stroke="${P_INK}" stroke-width="1.6"/>
+    <rect x="44" y="37.5" width="5" height="5" fill="${P_BG}" stroke="${P_INK}" stroke-width="1.6"/>
+    <path d="M29 28h4M37 28h4" stroke="${P_INK}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M30 36q4 3.5 8 .5" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-akt") },
+
+  KONZERNCHEF: { rolle:"Der Konzernchef", svg: portraitSVG(`
+    <path d="M12 72 Q36 45 60 72 Z" fill="${P_INK}"/>
+    <rect x="29" y="42" width="14" height="8" rx="3" fill="${P_INK}"/>
+    <rect x="32" y="37" width="8" height="8" fill="${P_SKIN}"/>
+    <circle cx="36" cy="28" r="13" fill="${P_SKIN}"/>
+    <path d="M24 24 Q27 15 36 15 Q45 15 48 24 L45 22 Q41 18 36 18 Q31 18 27 22 Z" fill="#8F8676"/>
+    <path d="M30 27h4M38 27h4" stroke="${P_INK}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M33 36h6" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-kon") },
+
+  JOURNALISTIN: { rolle:"Die Journalistin", svg: portraitSVG(`
+    <path d="M13 72 Q36 47 59 72 Z" fill="#3D6B8E"/>
+    <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
+    <path d="M20 46 Q18 14 36 13 Q54 14 52 46 L46 44 Q49 20 36 19 Q23 20 26 44 Z" fill="${P_HAIR}"/>
+    <circle cx="36" cy="29" r="12.5" fill="${P_SKIN}"/>
+    <path d="M24 31 Q22 15 36 15 Q50 15 48 31 L45 28 Q45 20 36 19 Q27 20 27 28 Z" fill="${P_HAIR}"/>
+    <circle cx="52" cy="52" r="5" fill="${P_INK}"/>
+    <rect x="50" y="56" width="4" height="14" fill="${P_INK}"/>
+    <path d="M30 28h4M38 28h4" stroke="${P_INK}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M32 36q4 3 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-jou") },
+
+  WISSENSCHAFTLER: { rolle:"Der Wissenschaftler", svg: portraitSVG(`
+    <path d="M12 72 Q36 47 60 72 Z" fill="#FBF6E9" stroke="${P_INK}" stroke-width="1.8"/>
+    <path d="M30 52 L36 72 M42 52 L36 72" fill="none" stroke="${P_INK}" stroke-width="1.4"/>
+    <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
+    <circle cx="36" cy="29" r="13" fill="${P_SKIN}"/>
+    <path d="M23 30 Q19 24 24 19 Q22 12 30 13 Q33 8 38 12 Q46 9 47 17 Q53 20 49 27 L45 24 Q46 19 40 19 Q36 16 32 19 Q27 18 27 24 Z" fill="#8F8676"/>
+    <circle cx="30" cy="29" r="4.5" fill="none" stroke="${P_INK}" stroke-width="1.8"/>
+    <circle cx="42" cy="29" r="4.5" fill="none" stroke="${P_INK}" stroke-width="1.8"/>
+    <path d="M34.5 29h3" stroke="${P_INK}" stroke-width="1.8"/>
+    <path d="M32 38q4 2 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-wis") },
+
+  BUERGERIN: { rolle:"Die B&uuml;rgerin", svg: portraitSVG(`
+    <path d="M13 72 Q36 48 59 72 Z" fill="#4A7C59"/>
+    <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
+    <circle cx="36" cy="29" r="13" fill="${P_SKIN}"/>
+    <path d="M23 34 Q21 13 36 13 Q51 13 49 34 L45 32 Q46 24 36 19 Q26 24 27 32 Z" fill="${P_HAIR}"/>
+    <path d="M30 28h4M38 28h4" stroke="${P_INK}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M32 36q4 3 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-bue") },
+
+  GENERAL: { rolle:"Der General", svg: portraitSVG(`
+    <path d="M12 72 Q36 46 60 72 Z" fill="#4A7C59"/>
+    <rect x="16" y="56" width="10" height="5" fill="#C87F1D" stroke="${P_INK}" stroke-width="1.4"/>
+    <rect x="46" y="56" width="10" height="5" fill="#C87F1D" stroke="${P_INK}" stroke-width="1.4"/>
+    <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
+    <circle cx="36" cy="30" r="12.5" fill="${P_SKIN}"/>
+    <path d="M22 24 Q24 12 36 12 Q48 12 50 24 L50 27 L22 27 Z" fill="#4A7C59" stroke="${P_INK}" stroke-width="1.6"/>
+    <rect x="21" y="25" width="30" height="4" fill="#C87F1D" stroke="${P_INK}" stroke-width="1.4"/>
+    <path d="M30 33h4M38 33h4" stroke="${P_INK}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M32 40h8" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
+  `,"pc-gen") }
+};
+
+/* ================================================================
+   KARTENDECK
+   Effekte: w=Wirtschaft, v=Vertrauen, g=Grundrechte, s=Souveränität
+   verzoegert: {nachKarten, ereignis:{titel,text,effekte}}
+   absender: Schlüssel in PORTRAITS
+   ================================================================ */
+const CARDS = [
+
+  /* ---- KARTE 1 (exakt vorgegeben) ---- */
+  {
+    id:"ki-basisgesetz",
+    absender:"MINISTER",
+    titel:"KI-Basisgesetz",
+    text:"Das Parlament legt ein umfassendes KI-Gesetz nach EU-Vorbild vor: Risikoklassen, Auditpflichten, hohe Strafen. Die Tech-Verbände drohen mit Abwanderung.",
+    konzeptTag:"Responsible Innovation / Regulierungsdilemma",
+    links:{ label:"Verabschieden", effekte:{w:-15,v:10,g:15,s:-5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Startup-Exodus",
+        text:"Ihre Verabschiedung des KI-Basisgesetzes aus einem früheren Amtsjahr zeigt Wirkung: Junge Unternehmen wandern in laxere Jurisdiktionen ab.",
+        effekte:{w:-10} } } },
+    rechts:{ label:"Ablehnen", effekte:{w:10,v:-5},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:"Deepfake-Wahlskandal ohne Rechtsgrundlage",
+        text:"Ihre Ablehnung des KI-Basisgesetzes zeigt Wirkung: Ein Deepfake erschüttert den Wahlkampf – es fehlt jede Handhabe.",
+        effekte:{v:-20,g:-10} } } }
+  },
+
+  /* ---- KARTE 2 (exakt vorgegeben) ---- */
+  {
+    id:"gesichter-der-stadt",
+    absender:"GENERAL",
+    titel:"Gesichter der Stadt",
+    text:"Die Polizei will Echtzeit-Gesichtserkennung an Bahnhöfen. Die Aufklärungsquote würde steigen. Bürgerrechtler sprechen von flächendeckender Überwachung.",
+    konzeptTag:"Boundary Critique – wer zählt als Betroffener?",
+    links:{ label:"Genehmigen", effekte:{w:5,v:5,g:-15},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"False-Positive-Skandal",
+        text:"Ihre Genehmigung der Gesichtserkennung zeigt Wirkung: Ein Unschuldiger wird aufgrund einer Fehlerkennung verhaftet.",
+        effekte:{v:-15,g:-5} } } },
+    rechts:{ label:"Untersagen", effekte:{v:-5,g:10,s:5} }
+  },
+
+  /* ---- KARTE 3 (exakt vorgegeben) ---- */
+  {
+    id:"der-beste-freund",
+    absender:"JOURNALISTIN",
+    titel:"Der beste Freund",
+    text:"Ein Companion-Chatbot ist die beliebteste App unter Jugendlichen. Erste Berichte über emotionale Abhängigkeit und Krisenfälle. Der Anbieter verweist auf Eigenverantwortung.",
+    konzeptTag:"Risiken sozialer KI / Fallstudie Companion-Chatbots",
+    links:{ label:"Altersverifikation + Auflagen", effekte:{w:-10,v:10,g:15},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:"Flucht in Offshore-Apps",
+        text:"Ihre Auflagen für Companion-Bots zeigen Wirkung: Jugendliche weichen auf unregulierte Offshore-Apps aus.",
+        effekte:{g:-10,s:-5} } } },
+    rechts:{ label:"Markt regeln lassen", effekte:{w:10},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:"Dokumentierter Krisenfall",
+        text:"Ihr Verzicht auf Chatbot-Auflagen zeigt Wirkung: Ein dokumentierter Krisenfall löst eine Medienwelle aus.",
+        effekte:{v:-20,g:-10} } } }
+  },
+
+  /* ---- KARTE 4 (exakt vorgegeben) ---- */
+  {
+    id:"digitaler-rohstoff",
+    absender:"KONZERNCHEF",
+    titel:"Digitaler Rohstoff",
+    text:"Ein Hyperscaler bietet an, das größte Rechenzentrum Europas zu bauen. Bedingung: subventionierter Strom und lockere Umweltauflagen. Der Hardware-Schrott ginge nach Westafrika.",
+    konzeptTag:"Digital Extractivism / Planetary Boundaries",
+    links:{ label:"Deal annehmen", effekte:{w:15,g:-10,s:10},
+      verzoegert:{ nachKarten:5, ereignis:{ titel:"Fotoreportage aus Agbogbloshie",
+        text:"Ihr Rechenzentrum-Deal zeigt Wirkung: Eine Fotoreportage zeigt Ihr Behördenlogo auf dem Elektroschrott in Ghana.",
+        effekte:{v:-15} } } },
+    rechts:{ label:"Nachhaltigkeitsauflagen fordern", effekte:{w:-10,g:10,s:-5} }
+  },
+
+  /* ---- KARTE 5 : Open Source vs. Exportkontrolle ---- */
+  {
+    id:"offene-gewichte",
+    absender:"WISSENSCHAFTLER",
+    titel:"Offene Gewichte",
+    text:"Ein heimisches Labor will sein leistungsstarkes Modell frei veröffentlichen. Forscher jubeln. Der Sicherheitsrat warnt: Diese Gewichte lassen sich auch für Cyberangriffe zweckentfremden.",
+    konzeptTag:"Dual-Use / Open-Source-Governance",
+    links:{ label:"Freigabe erlauben", effekte:{w:10,s:10,g:-10},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Modell in falschen Händen",
+        text:"Ihre Freigabe der offenen Gewichte zeigt Wirkung: Eine kriminelle Gruppe nutzt das Modell für eine Phishing-Welle.",
+        effekte:{v:-10,g:-10} } } },
+    rechts:{ label:"Exportkontrolle verhängen", effekte:{w:-10,s:-5,g:10,v:5} }
+  },
+
+  /* ---- KARTE 6 : Race to the bottom ---- */
+  {
+    id:"regulierungswettlauf",
+    absender:"MINISTER",
+    titel:"Der Wettlauf nach unten",
+    text:"Das Nachbarland streicht sämtliche KI-Auflagen und lockt Investoren. Ihr Wirtschaftsminister fordert, nachzuziehen, bevor Nordavia abgehängt wird.",
+    konzeptTag:"Race to the Bottom / regulatorischer Standortwettbewerb",
+    links:{ label:"Standards senken", effekte:{w:15,g:-15,v:-5} },
+    rechts:{ label:"Kurs halten", effekte:{w:-10,g:10,v:5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Abwanderung an die Grenze",
+        text:"Ihr Festhalten am Kurs zeigt Wirkung: Zwei Konzerne verlegen ihre Zentralen ins deregulierte Nachbarland.",
+        effekte:{w:-10,s:-5} } } }
+  },
+
+  /* ---- KARTE 7 : Lobbydruck Techno-Optimisten ---- */
+  {
+    id:"innovationsgipfel",
+    absender:"LOBBYISTIN",
+    titel:"Der Innovationsgipfel",
+    text:"Eine Allianz von Techno-Optimisten lädt Sie zum Gipfel. Ihre Botschaft: Jede Regel koste Wohlstand, Fortschritt regle sich selbst. Ein üppig dotierter Beraterposten wird angedeutet.",
+    konzeptTag:"Technikoptimismus / Capture-Gefahr",
+    links:{ label:"Deregulierungspaket zusagen", effekte:{w:15,v:-10,g:-5},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:"Enthüllung der Nähe",
+        text:"Ihre Nähe zur Techno-Lobby zeigt Wirkung: Investigativjournalisten decken den Beraterposten auf.",
+        effekte:{v:-15} } } },
+    rechts:{ label:"Distanz wahren", effekte:{w:-5,v:10,g:5} }
+  },
+
+  /* ---- KARTE 8 : Moratorium Frontier-KI ---- */
+  {
+    id:"moratorium",
+    absender:"WISSENSCHAFTLER",
+    titel:"Sechs Monate Stille",
+    text:"Hunderte Forscher fordern ein Moratorium für das nächste Frontier-Modell – die Kontrollierbarkeit sei ungeklärt. Andere nennen es Panikmache und Wettbewerbssabotage.",
+    konzeptTag:"Superintelligenz-Debatte / Vorsorgeprinzip",
+    links:{ label:"Moratorium verhängen", effekte:{w:-15,v:10,g:10,s:-5},
+      verzoegert:{ nachKarten:5, ereignis:{ titel:"Fortschritt anderswo",
+        text:"Ihr Moratorium zeigt Wirkung: Das ausländische Frontier-Modell erscheint trotzdem – Nordavia schaut nur zu.",
+        effekte:{s:-10,w:-5} } } },
+    rechts:{ label:"Entwicklung zulassen", effekte:{w:10,s:10,v:-10} }
+  },
+
+  /* ---- KARTE 9 : Algorithmische Behörden-Entscheidungen ---- */
+  {
+    id:"algorithmus-amt",
+    absender:"MINISTER",
+    titel:"Der rechnende Sachbearbeiter",
+    text:"Das Sozialamt will Anträge algorithmisch vorsortieren – schneller, günstiger. Eine Studie zeigt: Das System benachteiligt Antragsteller aus bestimmten Vierteln systematisch.",
+    konzeptTag:"Algorithmic Fairness / automatisierte Verwaltung",
+    links:{ label:"System einführen", effekte:{w:10,g:-15,v:-5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Klagewelle",
+        text:"Ihr Behörden-Algorithmus zeigt Wirkung: Betroffene ziehen erfolgreich vor Gericht, das System wird als diskriminierend eingestuft.",
+        effekte:{v:-10,g:-5} } } },
+    rechts:{ label:"Menschliche Prüfung vorschreiben", effekte:{w:-10,g:10,v:5} }
+  },
+
+  /* ---- KARTE 10 : Gig-Economy ---- */
+  {
+    id:"gig-economy",
+    absender:"AKTIVISTIN",
+    titel:"Die Fahrer der App",
+    text:"Eine Lieferplattform stuft ihre Fahrer als Selbstständige ein – kein Mindestlohn, keine Absicherung. Der Algorithmus verteilt die Aufträge. Die Fahrer fordern Angestelltenrechte.",
+    konzeptTag:"Plattformökonomie / algorithmisches Management",
+    links:{ label:"Als Angestellte einstufen", effekte:{w:-10,v:10,g:10},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:"Plattform zieht sich zurück",
+        text:"Ihre Neueinstufung der Fahrer zeigt Wirkung: Die Plattform stellt den Betrieb in Nordavia ein, tausende verlieren ihr Einkommen.",
+        effekte:{w:-10,v:-5} } } },
+    rechts:{ label:"Selbstständigkeit bestätigen", effekte:{w:10,v:-10,g:-5} }
+  },
+
+  /* ---- KARTE 11 : Social-Media-Moderation ---- */
+  {
+    id:"moderationspflicht",
+    absender:"JOURNALISTIN",
+    titel:"Der Löschknopf",
+    text:"Ein soziales Netzwerk soll schädliche Inhalte binnen einer Stunde entfernen – bei hohen Strafen. Kritiker warnen vor Overblocking und dem Ende der freien Rede.",
+    konzeptTag:"Content-Moderation / Chilling Effects",
+    links:{ label:"Löschpflicht verschärfen", effekte:{g:5,v:10,w:-5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Overblocking-Skandal",
+        text:"Ihre verschärfte Löschpflicht zeigt Wirkung: Die Plattform entfernt vorsorglich auch legitime Satire und Journalismus.",
+        effekte:{g:-15,v:-5} } } },
+    rechts:{ label:"Auf Selbstregulierung setzen", effekte:{g:-5,v:-10,w:5} }
+  },
+
+  /* ---- KARTE 12 : Autonomes Fahren ---- */
+  {
+    id:"autonomes-fahren",
+    absender:"KONZERNCHEF",
+    titel:"Freie Fahrt",
+    text:"Ein Hersteller will Robotaxis ohne Sicherheitsfahrer zulassen. Statistisch sicherer als Menschen – aber jeder Unfall wäre eine Programmierentscheidung. Wer haftet, wenn der Code tötet?",
+    konzeptTag:"Verantwortungslücke / Moral Machine",
+    links:{ label:"Zulassung erteilen", effekte:{w:15,s:5,g:-10},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Der erste tödliche Unfall",
+        text:"Ihre Robotaxi-Zulassung zeigt Wirkung: Ein autonomes Fahrzeug verursacht einen tödlichen Unfall – die Haftungsfrage bleibt ungeklärt.",
+        effekte:{v:-15,g:-5} } } },
+    rechts:{ label:"Sicherheitsfahrer vorschreiben", effekte:{w:-10,v:5,g:5} }
+  },
+
+  /* ---- KARTE 13 : KI in Schulen ---- */
+  {
+    id:"ki-in-schulen",
+    absender:"LOBBYISTIN",
+    titel:"Der Lehrer im Chip",
+    text:"Ein Bildungskonzern bietet ein KI-Tutorsystem für alle Schulen an – gratis. Bedingung: Es lernt aus den Daten der Kinder. Lehrergewerkschaften und Datenschützer schlagen Alarm.",
+    konzeptTag:"Datafizierung der Kindheit / Bildungsgerechtigkeit",
+    links:{ label:"Flächendeckend einführen", effekte:{w:5,s:-10,g:-10,v:5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:"Datenschatz in Konzernhand",
+        text:"Ihre Schul-KI zeigt Wirkung: Der Konzern besitzt nun die Bildungsprofile einer ganzen Generation und diktiert die Preise.",
+        effekte:{s:-10,v:-5} } } },
+    rechts:{ label:"Ablehnen, eigene Lösung entwickeln", effekte:{w:-10,s:10,g:5} }
+  },
+
+  /* ---- KARTE 14 : Digital-Democracy-Plattform ---- */
+  {
+    id:"digitale-demokratie",
+    absender:"BUERGERIN",
+    titel:"Die Stimme des Volkes",
+    text:"Eine Beteiligungsplattform soll Bürger per KI-Auswertung direkt in Gesetze einbinden. Befürworter feiern echte Teilhabe. Gegner warnen vor Manipulation und der Diktatur der Lautstärksten.",
+    konzeptTag:"Deliberative Demokratie / Partizipations-Design",
+    links:{ label:"Plattform verpflichtend machen", effekte:{v:15,w:-5,g:-5},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:"Kampagne kapert die Plattform",
+        text:"Ihre Demokratie-Plattform zeigt Wirkung: Eine koordinierte Kampagne dominiert die Abstimmungen und delegitimiert das Ergebnis.",
+        effekte:{v:-15,g:-5} } } },
+    rechts:{ label:"Nur beratend zulassen", effekte:{v:5,g:5,w:-5} }
+  },
+
+  /* ---- KARTE 15 : Cloud-Abhängigkeit kritischer Infrastruktur ---- */
+  {
+    id:"cloud-abhaengigkeit",
+    absender:"GENERAL",
+    titel:"Die fremde Wolke",
+    text:"Das Stromnetz soll auf die Cloud eines ausländischen Anbieters umziehen – hochmodern, günstig, zuverlässig. Der Betreiber sitzt jedoch außerhalb Ihrer Rechtsordnung.",
+    konzeptTag:"Technologische Souveränität / kritische Infrastruktur",
+    links:{ label:"Migration erlauben", effekte:{w:10,s:-15,v:5},
+      verzoegert:{ nachKarten:5, ereignis:{ titel:"Der Hebel des Anbieters",
+        text:"Ihre Cloud-Migration zeigt Wirkung: In einer diplomatischen Krise droht der Anbieter mit Drosselung – das Stromnetz als Faustpfand.",
+        effekte:{s:-10,v:-10} } } },
+    rechts:{ label:"Nationale Lösung erzwingen", effekte:{w:-10,s:15,v:-5} }
+  }
+];
+
+/* ================================================================
+   END-SCREEN-TEXTE (je Meter × zwei Extreme)
+   ================================================================ */
+const ENDINGS = {
+  w:{ low:"Der letzte Tech-Konzern verlässt Nordavia. Sie regulieren jetzt ein Museum.",
+      high:"Ungebremster Wildwuchs: Ein fehlerhaftes KI-System legt die Börse lahm. Niemand war zuständig – Sie auch nicht." },
+  g:{ low:"Leak enthüllt Totalüberwachung. Das Verfassungsgericht kassiert Ihre gesamte Amtszeit.",
+      high:"Absolute Vorsicht: Nordavia verbietet aus Prinzip. Die Bevölkerung nutzt heimlich ausländische Dienste – unreguliert." },
+  v:{ low:"Massenproteste vor Ihrer Behörde.",
+      high:"Blindes Vertrauen: Niemand hinterfragt Sie mehr. Der erste große Fehler bleibt Monate unentdeckt." },
+  s:{ low:"Nordavia ist digitale Kolonie. Die AGB schreiben andere.",
+      high:"Totale Abschottung: Der nationale Sonderweg ist inkompatibel mit dem Rest der Welt." }
+};
+
+/* ================================================================
+   HILFSFUNKTIONEN
+   ================================================================ */
+const $  = (s,el=document)=> el.querySelector(s);
+const $$ = (s,el=document)=> [...el.querySelectorAll(s)];
+const clamp = (v,min,max)=> Math.max(min, Math.min(max, v));
+
+// Fisher-Yates-Shuffle
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* ================================================================
+   SPIEL-INITIALISIERUNG
+   ================================================================ */
+function startGame(){
+  state     = { w:50, v:50, g:50, s:50 };
+  deck      = shuffle(CARDS);   // gemischte Ziehreihenfolge
+  queue     = [];               // verzögerte Ereignisse: {nachKarten, ereignis, jahr}
+  cardCount = 0;                // gespielte Karten = Amtsjahre
+  isEvent   = false;
+
+  $("#end").classList.remove("show");
+  document.body.classList.remove("event-mode");
+  renderMeters();
+  nextCard();
+}
+
+/* Nächste Karte bestimmen: fällige Ereignisse haben Vorrang */
+function nextCard(){
+  // Fällige verzögerte Ereignisse einschieben
+  const dueIndex = queue.findIndex(q => q.nachKarten <= 0);
+  if(dueIndex !== -1){
+    const due = queue.splice(dueIndex,1)[0];
+    showCard(due.ereignis, true, due.jahr);
+    return;
+  }
+
+  // Deck ggf. neu mischen, wenn es leer läuft
+  if(deck.length === 0){ deck = shuffle(CARDS); }
+  const card = deck.shift();
+  showCard(card, false);
+}
+
+/* ================================================================
+   KARTEN-RENDERING
+   ================================================================ */
+function showCard(card, asEvent, ausloeserJahr){
+  current = card;
+  isEvent = asEvent;
+  document.body.classList.toggle("event-mode", asEvent);
+
+  const stage = $("#stage");
+  $$(".card:not(.ghost)", stage).forEach(c => c.remove());
+
+  const el = document.createElement("div");
+  el.className = "card" + (asEvent ? " event" : "");
+
+  if(asEvent){
+    const refJahr = (ausloeserJahr != null)
+      ? `Ausl&ouml;sender Vorgang: Amtsjahr ${ausloeserJahr}` : "Wiedervorlage";
+    el.innerHTML = `
+      <div class="event-stamp">Vorgang Wiedervorlage</div>
+      <div class="event-ref">${refJahr}</div>
+      <h2 class="titel">${card.titel}</h2>
+      <p class="text">${card.text}</p>
+      <div class="year">Amtsjahr ${cardCount+1}</div>`;
+  }else{
+    const p = PORTRAITS[card.absender] || PORTRAITS.BUERGERIN;
+    el.innerHTML = `
+      <div class="stamp stamp-left">${card.links.label}</div>
+      <div class="stamp stamp-right">${card.rechts.label}</div>
+      <div class="portrait">${p.svg}</div>
+      <div class="rolle">${p.rolle}</div>
+      <h2 class="titel">${card.titel}</h2>
+      <p class="text">${card.text}</p>
+      <div class="opts">
+        <span class="opt opt-left">&larr; ${card.links.label}</span>
+        <span class="opt opt-right">${card.rechts.label} &rarr;</span>
+      </div>
+      <div class="year">Amtsjahr ${cardCount+1}</div>
+      <div class="konzept-tag">${card.konzeptTag}</div>`;
+  }
+
+  stage.appendChild(el);
+
+  // Stapelkarten hinter der aktiven Karte an deren Maße anpassen
+  requestAnimationFrame(sizeGhosts);
+
+  // Deal-Animation: nachrückende Karte (scale 0.96 → 1, 180ms)
+  el.animate(
+    [{transform:"scale(0.96)", opacity:0},{transform:"scale(1)", opacity:1}],
+    {duration:180, easing:"ease-out"}
+  );
+
+  if(!asEvent) attachDrag(el);
+}
+
+/* Stapelkarten an die Maße der aktiven Karte angleichen
+   (auch bei Resize / Orientierungswechsel) */
+function sizeGhosts(){
+  const stage = $("#stage");
+  const el = $(".card:not(.ghost)", stage);
+  if(!el) return;
+  const h = el.offsetHeight, w = el.offsetWidth;
+  $$(".card.ghost", stage).forEach(g=>{
+    g.style.height = h + "px";
+    g.style.width  = w + "px";
+    g.style.maxWidth = "none";
+  });
+}
+window.addEventListener("resize", ()=> requestAnimationFrame(sizeGhosts));
+
+/* ================================================================
+   AMTSSIEGEL-ANZEIGE (vertikale Füllung im Kreis, keine Zahlen)
+   ================================================================ */
+function renderMeters(changedKeys){
+  $$(".meter").forEach(m=>{
+    const k = m.dataset.key;
+    const v = clamp(state[k], 0, 100);
+    // Füllung + Füllkante (48×48) nach unten schieben: 0% → leer, 100% → deckend
+    const ty = 48 * (1 - v/100);
+    $$(".fillmove", m).forEach(r => r.style.transform = `translateY(${ty}px)`);
+
+    // Warnring, sobald ein Wert sich einem Extrem nähert
+    m.classList.toggle("warn", v <= 20 || v >= 80);
+
+    if(changedKeys && changedKeys.includes(k)){
+      const icon = $(".icon", m);
+      icon.classList.remove("bounce");
+      void icon.getBoundingClientRect(); // Reflow, damit die Animation neu startet
+      icon.classList.add("bounce");
+    }
+  });
+}
+
+/* Preview-Punkte: zeigen NUR betroffene Meter (kein Vorzeichen/Stärke) */
+function showPreview(effekte){
+  $$(".meter").forEach(m=>{
+    const k = m.dataset.key;
+    const affected = effekte && (k in effekte) && effekte[k] !== 0;
+    $(".dot", m).classList.toggle("show", !!affected);
+  });
+}
+function clearPreview(){ $$(".meter .dot").forEach(d=>d.classList.remove("show")); }
+
+/* ================================================================
+   ENTSCHEIDUNG ANWENDEN
+   ================================================================ */
+function applyEffects(effekte){
+  if(!effekte) return [];
+  const changed = [];
+  KEYS.forEach(k=>{
+    if(k in effekte && effekte[k] !== 0){ state[k] += effekte[k]; changed.push(k); }
+    else if(k in effekte){ state[k] += effekte[k]; }
+  });
+  return changed;
+}
+
+function commitChoice(option){
+  const changed = applyEffects(option.effekte);
+
+  // Verzögerte Konsequenz in die Queue legen (jahr = auslösendes Amtsjahr)
+  if(option.verzoegert){
+    queue.push({
+      nachKarten: option.verzoegert.nachKarten,
+      ereignis:   option.verzoegert.ereignis,
+      jahr:       cardCount + 1
+    });
+  }
+  afterCard(changed);
+}
+
+/* Ereigniskarte quittieren ("Zur Kenntnis genommen") */
+function commitEvent(){
+  const changed = applyEffects(current.effekte);
+  afterCard(changed);
+}
+
+/* Nach jeder Karte: Zähler hochsetzen, Queue tickt, Meter updaten, Game-Over prüfen */
+function afterCard(changedKeys){
+  cardCount++;
+  // Alle wartenden Ereignisse um eine Karte näher rücken
+  queue.forEach(q => q.nachKarten--);
+
+  renderMeters(changedKeys);
+  clearPreview();
+
+  if(checkGameOver()) return;
+  // kurze Pause, damit Siegel-Animation sichtbar wird
+  setTimeout(nextCard, 180);
+}
+
+/* ================================================================
+   GAME OVER
+   ================================================================ */
+function checkGameOver(){
+  for(const k of KEYS){
+    if(state[k] <= 0) return endGame(k,"low");
+    if(state[k] >= 100) return endGame(k,"high");
+  }
+  return false;
+}
+
+function endGame(meterKey, extreme){
+  if(cardCount > sessionHighscore) sessionHighscore = cardCount;
+
+  $("#endHeadline").innerHTML = ENDINGS[meterKey][extreme] + '<span class="rule"></span>';
+  $("#endScore").textContent = cardCount;
+  $("#endHigh").textContent  = "Beste Amtszeit dieser Sitzung: " + sessionHighscore + " Amtsjahre";
+  $("#end").classList.add("show");
+  return true;
+}
+
+/* ================================================================
+   DRAG / SWIPE / TASTATUR — Pointer Events + rAF-Rendering
+   ================================================================ */
+const SWIPE_RATIO    = 0.30;   // Anteil der Kartenbreite ab dem der Swipe gilt
+const FLICK_VELOCITY = 0.5;    // px/ms
+const MAX_ROTATION   = 14;     // Grad
+const VELOCITY_WINDOW= 80;     // ms
+
+function attachDrag(el){
+  let active = false, pointerId = null, committed = false;
+  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  let rafId = 0;
+  const samples = []; // [timeStamp, clientX] der letzten ~80ms
+
+  const stampL = $(".stamp-left", el);
+  const stampR = $(".stamp-right", el);
+
+  // Rendering ausschließlich im rAF-Loop; Handler schreiben nur Variablen
+  function render(){
+    rafId = 0;
+    const rot = clamp(offsetX/20, -MAX_ROTATION, MAX_ROTATION);
+    el.style.transform = `translate(${offsetX}px, ${offsetY*0.15}px) rotate(${rot}deg)`;
+
+    // Stempel-Opacity proportional zur Zugdistanz
+    const prog = Math.min(1, Math.abs(offsetX) / (el.offsetWidth * SWIPE_RATIO));
+    stampR.style.opacity = offsetX > 0 ? prog : 0;
+    stampL.style.opacity = offsetX < 0 ? prog : 0;
+
+    // Unsicherheits-Preview: nur WELCHE Meter betroffen sind
+    if(Math.abs(offsetX) > 12){
+      showPreview((offsetX < 0 ? current.links : current.rechts).effekte);
+    }else{
+      clearPreview();
+    }
+
+    if(active) rafId = requestAnimationFrame(render);
+  }
+
+  el.addEventListener("pointerdown", e=>{
+    if(committed) return;
+    active = true; pointerId = e.pointerId;
+    startX = e.clientX; startY = e.clientY;
+    offsetX = 0; offsetY = 0;
+    samples.length = 0;
+    samples.push([e.timeStamp, e.clientX]);
+    el.setPointerCapture(pointerId);
+    el.classList.add("dragging");        // transition:none !important
+    if(!rafId) rafId = requestAnimationFrame(render);
+    e.preventDefault();
+  });
+
+  el.addEventListener("pointermove", e=>{
+    if(!active || e.pointerId !== pointerId) return;
+    offsetX = e.clientX - startX;
+    offsetY = e.clientY - startY;
+    samples.push([e.timeStamp, e.clientX]);
+    while(samples.length > 2 && e.timeStamp - samples[0][0] > VELOCITY_WINDOW){
+      samples.shift();
+    }
+  });
+
+  function release(e){
+    if(!active || e.pointerId !== pointerId) return;
+    active = false;
+    el.classList.remove("dragging");
+
+    // Flick-Velocity aus den letzten ~80ms
+    let velocity = 0;
+    if(samples.length > 1){
+      const [t0,x0] = samples[0];
+      const [t1,x1] = samples[samples.length-1];
+      if(t1 > t0) velocity = (x1 - x0) / (t1 - t0);
+    }
+
+    const overDistance = Math.abs(offsetX) > el.offsetWidth * SWIPE_RATIO;
+    const flick = Math.abs(velocity) > FLICK_VELOCITY &&
+                  Math.sign(velocity) === Math.sign(offsetX || velocity);
+
+    if(overDistance || flick){
+      committed = true;
+      flyOut(el, offsetX !== 0 ? Math.sign(offsetX) : Math.sign(velocity));
+    }else{
+      // Rückfedern
+      el.style.transition = "transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+      el.style.transform  = "";
+      stampL.style.opacity = 0;
+      stampR.style.opacity = 0;
+      clearPreview();
+    }
+  }
+  el.addEventListener("pointerup", release);
+  el.addEventListener("pointercancel", release);
+}
+
+/* Karte aus dem Bild fliegen lassen und Entscheidung ausführen */
+function flyOut(el, dir){
+  if(el.dataset.flying) return;
+  el.dataset.flying = "1";
+  const stamp = $(dir < 0 ? ".stamp-left" : ".stamp-right", el);
+  if(stamp) stamp.style.opacity = 1;
+  el.classList.remove("dragging");
+  el.style.transition = "transform 250ms ease-out, opacity 250ms ease-out";
+  el.style.transform  = `translate(${dir * window.innerWidth * 1.2}px, 0) rotate(${dir * 25}deg)`;
+  el.style.opacity    = "0";
+  const option = dir < 0 ? current.links : current.rechts;
+  setTimeout(()=>{ el.remove(); commitChoice(option); }, 250);
+}
+
+/* Programmatisch getriggerter Swipe (Pfeiltasten) — gleiche Fly-out-Animation */
+function keySwipe(dir){
+  const el = $(".card:not(.ghost)", $("#stage"));
+  if(!el) return;
+  if(isEvent){ commitEvent(); return; }   // Bei Ereignis: jede Taste = Weiter
+  const option = dir < 0 ? current.links : current.rechts;
+  showPreview(option.effekte);
+  flyOut(el, dir);
+}
+
+document.addEventListener("keydown", e=>{
+  if($("#end").classList.contains("show")) return;
+  if(e.key === "ArrowLeft")  { e.preventDefault(); keySwipe(-1); }
+  if(e.key === "ArrowRight") { e.preventDefault(); keySwipe(1); }
+  if(isEvent && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); commitEvent(); }
+});
+
+/* ================================================================
+   UI-BINDINGS
+   ================================================================ */
+$("#btnWeiter").addEventListener("click", ()=>{ if(isEvent) commitEvent(); });
+$("#btnRestart").addEventListener("click", startGame);
+$("#toggleConcept").addEventListener("click", ()=>{
+  document.body.classList.toggle("concept-on");
+  $("#toggleState").textContent = document.body.classList.contains("concept-on") ? "AN" : "AUS";
+});
+
+/* Los geht's */
+startGame();
+</script>
+</body>
+</html>
