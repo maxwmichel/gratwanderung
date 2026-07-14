@@ -355,6 +355,104 @@ body.concept-on .toggle{ border-color:var(--ocker); color:var(--ink); }
 body.concept-on .toggle .state{ color:var(--ocker); }
 
 /* ============================================================
+   INTRO-SCREEN "DIENSTANTRITT" (Tutorial vor Spielbeginn)
+   ============================================================ */
+#intro{
+  position:absolute; inset:0; z-index:6;
+  background:var(--bg);
+  display:none; flex-direction:column; justify-content:center; align-items:center;
+  padding:30px 22px calc(30px + env(safe-area-inset-bottom));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+#intro.show{ display:flex; }
+#intro .intro-card{
+  position:relative;
+  width:100%; max-width:420px;
+  background:var(--card);
+  border:2px solid var(--ink);
+  border-radius:6px;
+  box-shadow:4px 4px 0 rgba(42,36,28,0.15);
+  padding:44px 24px 26px;
+  margin:auto 0;
+}
+#intro .intro-stamp{
+  position:absolute; top:-16px; left:50%;
+  transform:translateX(-50%) rotate(-6deg);
+  font-family:var(--mono); font-weight:600;
+  font-size:clamp(14px, 4.6vw, 18px); letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ocker);
+  border:3px solid var(--ocker); border-radius:3px;
+  box-shadow:inset 0 0 0 2px var(--card), inset 0 0 0 4px var(--ocker);
+  background:var(--card);
+  padding:8px 14px; white-space:nowrap;
+}
+#intro .kicker{
+  font-family:var(--mono);
+  color:var(--ink-2); letter-spacing:.24em; font-size:9.5px; font-weight:600;
+  text-transform:uppercase; text-align:center; margin-bottom:14px;
+}
+#intro .lede{
+  font-family:var(--serif);
+  font-size:15.5px; line-height:1.55; color:var(--ink);
+  text-align:center; margin:0 0 18px;
+}
+#intro .rules{
+  list-style:none; margin:0 0 20px; padding:0;
+  display:flex; flex-direction:column; gap:12px;
+}
+#intro .rules li{
+  display:flex; gap:11px; align-items:flex-start;
+  font-family:var(--mono);
+  font-size:11px; line-height:1.55; color:var(--ink);
+  letter-spacing:.02em;
+}
+#intro .rules .num{
+  flex:0 0 auto;
+  width:22px; height:22px; border-radius:50%;
+  border:1.5px solid var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:600; font-size:10.5px;
+  color:var(--ocker);
+  margin-top:1px;
+}
+#intro .rules b{ color:var(--ocker); }
+#intro .legend{
+  display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center;
+  margin:0 0 22px; padding:10px 8px;
+  border-top:1px dashed rgba(42,36,28,0.35);
+  border-bottom:1px dashed rgba(42,36,28,0.35);
+}
+#intro .legend span{
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-size:9px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-2);
+}
+#intro .legend i{
+  width:9px; height:9px; border-radius:50%;
+  border:1.5px solid var(--ink); display:inline-block;
+}
+#intro .btn-start{
+  display:block; margin:0 auto;
+  padding:12px 34px;
+  background:var(--card); color:var(--ink);
+  border:2px solid var(--ink); border-radius:4px;
+  box-shadow:3px 3px 0 rgba(42,36,28,0.2);
+  font-family:var(--mono);
+  font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  font-size:13px; cursor:pointer;
+}
+#intro .btn-start:hover{ background:var(--ocker); color:var(--card); }
+#intro .btn-start:active{ box-shadow:1px 1px 0 rgba(42,36,28,0.2); transform:translate(2px,2px); }
+@media (max-height:720px){
+  #intro .intro-card{ padding:38px 20px 20px; }
+  #intro .lede{ font-size:14px; margin-bottom:14px; }
+  #intro .rules{ gap:9px; margin-bottom:14px; }
+  #intro .rules li{ font-size:10px; }
+  #intro .legend{ margin-bottom:16px; padding:8px 4px; }
+}
+
+/* ============================================================
    END-SCREEN "AKTE GESCHLOSSEN"
    ============================================================ */
 #end{
@@ -580,6 +678,28 @@ body.concept-on .toggle .state{ color:var(--ocker); }
       <span class="state" id="toggleState">AUS</span>
     </label>
   </footer>
+
+  <!-- Intro-Screen "DIENSTANTRITT" (Tutorial) -->
+  <div id="intro" class="show">
+    <div class="intro-card">
+      <div class="intro-stamp">Dienstantritt</div>
+      <div class="kicker">Ernennungsurkunde &middot; Amt f&uuml;r Technologiefolgen</div>
+      <p class="lede">Sie leiten ab sofort die Regulierungsbeh&ouml;rde von Nordavia. Auf Ihrem Schreibtisch landen die Technologie-Entscheidungen des Landes &ndash; und jede hat einen Preis.</p>
+      <ul class="rules">
+        <li><span class="num">1</span><span>Wischen Sie jede Akte nach <b>&larr; links</b> oder <b>rechts &rarr;</b> (oder nutzen Sie die Pfeiltasten), um sich zu entscheiden.</span></li>
+        <li><span class="num">2</span><span>Jede Entscheidung ver&auml;ndert die vier <b>Amtssiegel</b> oben. F&auml;llt eines auf <b>0</b> oder steigt auf <b>100</b>, endet Ihre Amtszeit.</span></li>
+        <li><span class="num">3</span><span>Beim Ziehen zeigen <b>Tintenpunkte</b>, welche Siegel betroffen sind &ndash; aber nicht, in welche Richtung. Regulieren hei&szlig;t entscheiden unter Unsicherheit.</span></li>
+        <li><span class="num">4</span><span>Manche Folgen kommen erst Jahre sp&auml;ter als <b>Wiedervorlage</b> zur&uuml;ck auf Ihren Tisch.</span></li>
+      </ul>
+      <div class="legend">
+        <span><i style="background:var(--m-w)"></i>Wirtschaft</span>
+        <span><i style="background:var(--m-v)"></i>Vertrauen</span>
+        <span><i style="background:var(--m-g)"></i>Grundrechte</span>
+        <span><i style="background:var(--m-s)"></i>Souver&auml;nit&auml;t</span>
+      </div>
+      <button class="btn-start" id="btnStart">Amt antreten</button>
+    </div>
+  </div>
 
   <!-- End-Screen "AKTE GESCHLOSSEN" -->
   <div id="end">
@@ -1293,6 +1413,10 @@ function keySwipe(dir){
 }
 
 document.addEventListener("keydown", e=>{
+  if($("#intro").classList.contains("show")){
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); dismissIntro(); }
+    return;
+  }
   if($("#end").classList.contains("show")) return;
   if(e.key === "ArrowLeft")  { e.preventDefault(); keySwipe(-1); }
   if(e.key === "ArrowRight") { e.preventDefault(); keySwipe(1); }
@@ -1309,8 +1433,12 @@ $("#toggleConcept").addEventListener("click", ()=>{
   $("#toggleState").textContent = document.body.classList.contains("concept-on") ? "AN" : "AUS";
 });
 
-/* Los geht's */
-startGame();
+/* Intro-Screen: Spiel startet erst nach dem Dienstantritt */
+function dismissIntro(){
+  $("#intro").classList.remove("show");
+  startGame();
+}
+$("#btnStart").addEventListener("click", dismissIntro);
 </script>
 </body>
 </html>
