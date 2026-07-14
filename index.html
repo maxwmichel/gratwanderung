@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>GRATWANDERUNG – Responsible Innovation als Regulator</title>
+<meta name="theme-color" content="#EFE6D0" />
 
 <!-- Google Fonts mit Offline-Fallbacks: Fraunces→Georgia, IBM Plex Mono→Courier New.
      Alle font-family-Deklarationen listen die Fallbacks, daher offline lauffähig. -->
@@ -34,7 +35,7 @@
 
 *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html,body{ height:100%; margin:0; }
+html,body{ height:100%; margin:0; overscroll-behavior:none; }
 
 body{
   background-color:var(--bg);
@@ -387,6 +388,19 @@ body.concept-on .toggle .state{ color:var(--ocker); }
   background:var(--card);
   padding:8px 14px; white-space:nowrap;
 }
+/* Sprachwahl (DE/EN) im Intro */
+.lang-switch{
+  position:absolute; top:10px; right:10px;
+  display:flex;
+  border:1.5px solid var(--ink-2); border-radius:3px; overflow:hidden;
+  background:var(--card);
+}
+.lang-switch button{
+  font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.08em;
+  padding:5px 10px; border:0; background:transparent; color:var(--ink-2);
+  cursor:pointer; text-transform:uppercase;
+}
+.lang-switch button.active{ background:var(--ink); color:var(--card); }
 #intro .kicker{
   font-family:var(--mono);
   color:var(--ink-2); letter-spacing:.24em; font-size:9.5px; font-weight:600;
@@ -576,7 +590,7 @@ body.concept-on .toggle .state{ color:var(--ocker); }
   <header class="brand">
     <h1>GRATWANDERUNG</h1>
     <div class="grat"></div>
-    <div class="subtitle">Amt f&uuml;r Technologiefolgen &middot; Nordavia</div>
+    <div class="subtitle" data-i18n="subtitle">Amt f&uuml;r Technologiefolgen &middot; Nordavia</div>
   </header>
 
   <!-- Amtssiegel-Meter -->
@@ -598,7 +612,7 @@ body.concept-on .toggle .state{ color:var(--ocker); }
           <path d="M27 19l8-6M35 13h-5M35 13v5"/>
         </g>
       </svg>
-      <div class="lbl">Wirtschaft &amp; Innovation</div>
+      <div class="lbl" data-i18n="lblW">Wirtschaft &amp; Innovation</div>
     </div>
     <div class="meter m-v" data-key="v">
       <div class="dot"></div>
@@ -617,7 +631,7 @@ body.concept-on .toggle .state{ color:var(--ocker); }
           <path d="M22 29l-2.5 2.5M26 31l-2 2"/>
         </g>
       </svg>
-      <div class="lbl">Vertrauen der Bev&ouml;lkerung</div>
+      <div class="lbl" data-i18n="lblV">Vertrauen der Bev&ouml;lkerung</div>
     </div>
     <div class="meter m-g" data-key="g">
       <div class="dot"></div>
@@ -635,7 +649,7 @@ body.concept-on .toggle .state{ color:var(--ocker); }
           <path d="M15 17l-4 8h8zM33 17l-4 8h8z"/>
         </g>
       </svg>
-      <div class="lbl">Grundrechte &amp; Sicherheit</div>
+      <div class="lbl" data-i18n="lblG">Grundrechte &amp; Sicherheit</div>
     </div>
     <div class="meter m-s" data-key="s">
       <div class="dot"></div>
@@ -654,7 +668,7 @@ body.concept-on .toggle .state{ color:var(--ocker); }
           <path d="M22 36v-6a2 2 0 014 0v6"/>
         </g>
       </svg>
-      <div class="lbl">Techn. Souver&auml;nit&auml;t</div>
+      <div class="lbl" data-i18n="lblS">Techn. Souver&auml;nit&auml;t</div>
     </div>
   </section>
 
@@ -665,16 +679,16 @@ body.concept-on .toggle .state{ color:var(--ocker); }
   </section>
 
   <!-- Quittier-Button (nur Ereigniskarten) -->
-  <div class="weiter-wrap"><button class="btn-weiter" id="btnWeiter">Zur Kenntnis genommen</button></div>
+  <div class="weiter-wrap"><button class="btn-weiter" id="btnWeiter" data-i18n="weiter">Zur Kenntnis genommen</button></div>
 
   <!-- Hinweiszeile / Toggle -->
   <footer class="hint">
-    <span class="arrows">&larr; &rarr; oder wischen</span>
+    <span class="arrows" data-i18n="arrows">&larr; &rarr; oder wischen</span>
     <label class="toggle" id="toggleConcept">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
         <path d="M8 7v9a4 4 0 008 0V6a3 3 0 00-6 0v9a1.6 1.6 0 003.2 0V7"/>
       </svg>
-      <span>Konzept-Overlay</span>
+      <span data-i18n="concept">Konzept-Overlay</span>
       <span class="state" id="toggleState">AUS</span>
     </label>
   </footer>
@@ -682,37 +696,41 @@ body.concept-on .toggle .state{ color:var(--ocker); }
   <!-- Intro-Screen "DIENSTANTRITT" (Tutorial) -->
   <div id="intro" class="show">
     <div class="intro-card">
-      <div class="intro-stamp">Dienstantritt</div>
-      <div class="kicker">Ernennungsurkunde &middot; Amt f&uuml;r Technologiefolgen</div>
-      <p class="lede">Sie leiten ab sofort die Regulierungsbeh&ouml;rde von Nordavia. Auf Ihrem Schreibtisch landen die Technologie-Entscheidungen des Landes &ndash; und jede hat einen Preis.</p>
+      <div class="intro-stamp" data-i18n="introStamp">Dienstantritt</div>
+      <div class="lang-switch" id="langSwitch" role="group" aria-label="Sprache / Language">
+        <button type="button" data-lang="de" class="active">DE</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <div class="kicker" data-i18n="introKicker">Ernennungsurkunde &middot; Amt f&uuml;r Technologiefolgen</div>
+      <p class="lede" data-i18n="introLede">Sie leiten ab sofort die Regulierungsbeh&ouml;rde von Nordavia. Auf Ihrem Schreibtisch landen die Technologie-Entscheidungen des Landes &ndash; und jede hat einen Preis.</p>
       <ul class="rules">
-        <li><span class="num">1</span><span>Wischen Sie jede Akte nach <b>&larr; links</b> oder <b>rechts &rarr;</b> (oder nutzen Sie die Pfeiltasten), um sich zu entscheiden.</span></li>
-        <li><span class="num">2</span><span>Jede Entscheidung ver&auml;ndert die vier <b>Amtssiegel</b> oben. F&auml;llt eines auf <b>0</b> oder steigt auf <b>100</b>, endet Ihre Amtszeit.</span></li>
-        <li><span class="num">3</span><span>Beim Ziehen zeigen <b>Tintenpunkte</b>, welche Siegel betroffen sind &ndash; aber nicht, in welche Richtung. Regulieren hei&szlig;t entscheiden unter Unsicherheit.</span></li>
-        <li><span class="num">4</span><span>Manche Folgen kommen erst Jahre sp&auml;ter als <b>Wiedervorlage</b> zur&uuml;ck auf Ihren Tisch.</span></li>
+        <li><span class="num">1</span><span data-i18n="rule1">Wischen Sie jede Akte nach <b>&larr; links</b> oder <b>rechts &rarr;</b> (oder nutzen Sie die Pfeiltasten), um sich zu entscheiden.</span></li>
+        <li><span class="num">2</span><span data-i18n="rule2">Jede Entscheidung ver&auml;ndert die vier <b>Amtssiegel</b> oben. F&auml;llt eines auf <b>0</b> oder steigt auf <b>100</b>, endet Ihre Amtszeit.</span></li>
+        <li><span class="num">3</span><span data-i18n="rule3">Beim Ziehen zeigen <b>Tintenpunkte</b>, welche Siegel betroffen sind &ndash; aber nicht, in welche Richtung. Regulieren hei&szlig;t entscheiden unter Unsicherheit.</span></li>
+        <li><span class="num">4</span><span data-i18n="rule4">Manche Folgen kommen erst Jahre sp&auml;ter als <b>Wiedervorlage</b> zur&uuml;ck auf Ihren Tisch.</span></li>
       </ul>
       <div class="legend">
-        <span><i style="background:var(--m-w)"></i>Wirtschaft</span>
-        <span><i style="background:var(--m-v)"></i>Vertrauen</span>
-        <span><i style="background:var(--m-g)"></i>Grundrechte</span>
-        <span><i style="background:var(--m-s)"></i>Souver&auml;nit&auml;t</span>
+        <span><i style="background:var(--m-w)"></i><span data-i18n="legendW">Wirtschaft</span></span>
+        <span><i style="background:var(--m-v)"></i><span data-i18n="legendV">Vertrauen</span></span>
+        <span><i style="background:var(--m-g)"></i><span data-i18n="legendG">Grundrechte</span></span>
+        <span><i style="background:var(--m-s)"></i><span data-i18n="legendS">Souver&auml;nit&auml;t</span></span>
       </div>
-      <button class="btn-start" id="btnStart">Amt antreten</button>
+      <button class="btn-start" id="btnStart" data-i18n="start">Amt antreten</button>
     </div>
   </div>
 
   <!-- End-Screen "AKTE GESCHLOSSEN" -->
   <div id="end">
     <div class="end-card">
-      <div class="end-stamp">Akte geschlossen</div>
-      <div class="kicker">Nordavia Tagblatt &middot; Amtszeit beendet</div>
+      <div class="end-stamp" data-i18n="endStamp">Akte geschlossen</div>
+      <div class="kicker" data-i18n="endKicker">Nordavia Tagblatt &middot; Amtszeit beendet</div>
       <div class="headline" id="endHeadline"></div>
-      <div class="score">Amtsjahre: <b id="endScore">0</b></div>
+      <div class="score"><span data-i18n="scoreLabel">Amtsjahre:</span> <b id="endScore">0</b></div>
       <div class="high" id="endHigh"></div>
-      <div class="reflex">&bdquo;Es gibt keine perfekte L&ouml;sung. Regulierung ist die Gratwanderung zwischen Parteilichkeit und Beliebigkeit.&ldquo;</div>
-      <button class="btn-restart" id="btnRestart">Neue Amtszeit</button>
-      <div class="project-note">
-        Universit&auml;res Projekt &middot; &copy; 2026 Max Michel, Minh Ha Nguyen &middot; Keine Weiterverwendung ohne Zustimmung.<br>
+      <div class="reflex" data-i18n="reflex">&bdquo;Es gibt keine perfekte L&ouml;sung. Regulierung ist die Gratwanderung zwischen Parteilichkeit und Beliebigkeit.&ldquo;</div>
+      <button class="btn-restart" id="btnRestart" data-i18n="restart">Neue Amtszeit</button>
+      <div class="project-note" data-i18n="note">
+        Universit&auml;res Projekt &middot; &copy; 2026 Max Michel, Minh Ha Nguyen, Vu Thuy Vy Nguyen &middot; Keine Weiterverwendung ohne Zustimmung.<br>
         Inspiriert vom Swipe-Entscheidungsprinzip von <cite>Reigns</cite>. Keine Verbindung zu dessen Entwickler:innen oder Rechteinhaber:innen.
       </div>
     </div>
@@ -731,6 +749,66 @@ let state, deck, queue, current, cardCount, isEvent;
 let sessionHighscore = 0;            // Highscore nur in JS-Variable (kein localStorage)
 
 /* ================================================================
+   SPRACHE / LANGUAGE (DE/EN, wählbar auf dem Intro-Screen)
+   Übersetzbare Strings sind Objekte {de, en}; L() wählt die aktive
+   Sprache. Kartentexte werden erst beim Rendern aufgelöst, daher
+   greift ein Sprachwechsel sofort.
+   ================================================================ */
+let lang = "de";
+const L = v => (v && typeof v === "object" && "de" in v) ? (v[lang] ?? v.de) : v;
+
+const UI = {
+  docTitle:   {de:"GRATWANDERUNG – Responsible Innovation als Regulator",
+               en:"GRATWANDERUNG – Responsible Innovation as a Regulator"},
+  subtitle:   {de:"Amt f&uuml;r Technologiefolgen &middot; Nordavia",
+               en:"Office of Technology Assessment &middot; Nordavia"},
+  lblW:       {de:"Wirtschaft &amp; Innovation",      en:"Economy &amp; Innovation"},
+  lblV:       {de:"Vertrauen der Bev&ouml;lkerung",   en:"Public Trust"},
+  lblG:       {de:"Grundrechte &amp; Sicherheit",     en:"Civil Rights &amp; Safety"},
+  lblS:       {de:"Techn. Souver&auml;nit&auml;t",    en:"Tech. Sovereignty"},
+  arrows:     {de:"&larr; &rarr; oder wischen",       en:"&larr; &rarr; or swipe"},
+  concept:    {de:"Konzept-Overlay",                  en:"Concept overlay"},
+  on:         {de:"AN",  en:"ON"},
+  off:        {de:"AUS", en:"OFF"},
+  weiter:     {de:"Zur Kenntnis genommen",            en:"Duly noted"},
+  yearWord:   {de:"Amtsjahr",                         en:"Year"},
+  eventStamp: {de:"Vorgang Wiedervorlage",            en:"File resubmitted"},
+  eventRefPrefix: {de:"Ausl&ouml;sender Vorgang: Amtsjahr", en:"Triggering decision: Year"},
+  eventRefFallback:{de:"Wiedervorlage",               en:"Resubmission"},
+
+  introStamp: {de:"Dienstantritt",                    en:"Taking Office"},
+  introKicker:{de:"Ernennungsurkunde &middot; Amt f&uuml;r Technologiefolgen",
+               en:"Certificate of Appointment &middot; Office of Technology Assessment"},
+  introLede:  {de:"Sie leiten ab sofort die Regulierungsbeh&ouml;rde von Nordavia. Auf Ihrem Schreibtisch landen die Technologie-Entscheidungen des Landes &ndash; und jede hat einen Preis.",
+               en:"You now head Nordavia&rsquo;s regulatory authority. The nation&rsquo;s technology decisions land on your desk &ndash; and every one has a price."},
+  rule1:      {de:"Wischen Sie jede Akte nach <b>&larr; links</b> oder <b>rechts &rarr;</b> (oder nutzen Sie die Pfeiltasten), um sich zu entscheiden.",
+               en:"Swipe each file <b>&larr; left</b> or <b>right &rarr;</b> (or use the arrow keys) to make your decision."},
+  rule2:      {de:"Jede Entscheidung ver&auml;ndert die vier <b>Amtssiegel</b> oben. F&auml;llt eines auf <b>0</b> oder steigt auf <b>100</b>, endet Ihre Amtszeit.",
+               en:"Every decision shifts the four <b>official seals</b> above. If one falls to <b>0</b> or rises to <b>100</b>, your term ends."},
+  rule3:      {de:"Beim Ziehen zeigen <b>Tintenpunkte</b>, welche Siegel betroffen sind &ndash; aber nicht, in welche Richtung. Regulieren hei&szlig;t entscheiden unter Unsicherheit.",
+               en:"While dragging, <b>ink dots</b> show which seals are affected &ndash; but not in which direction. Regulating means deciding under uncertainty."},
+  rule4:      {de:"Manche Folgen kommen erst Jahre sp&auml;ter als <b>Wiedervorlage</b> zur&uuml;ck auf Ihren Tisch.",
+               en:"Some consequences only return to your desk years later as a <b>resubmitted file</b>."},
+  legendW:    {de:"Wirtschaft",        en:"Economy"},
+  legendV:    {de:"Vertrauen",         en:"Trust"},
+  legendG:    {de:"Grundrechte",       en:"Rights"},
+  legendS:    {de:"Souver&auml;nit&auml;t", en:"Sovereignty"},
+  start:      {de:"Amt antreten",      en:"Take office"},
+
+  endStamp:   {de:"Akte geschlossen",  en:"Case Closed"},
+  endKicker:  {de:"Nordavia Tagblatt &middot; Amtszeit beendet",
+               en:"Nordavia Gazette &middot; Term ended"},
+  scoreLabel: {de:"Amtsjahre:",        en:"Years in office:"},
+  highLabel:  {de:"Beste Amtszeit dieser Sitzung:", en:"Best term this session:"},
+  yearsWord:  {de:"Amtsjahre",         en:"years"},
+  reflex:     {de:"&bdquo;Es gibt keine perfekte L&ouml;sung. Regulierung ist die Gratwanderung zwischen Parteilichkeit und Beliebigkeit.&ldquo;",
+               en:"&ldquo;There is no perfect solution. Regulation is a tightrope walk between partiality and arbitrariness.&rdquo;"},
+  restart:    {de:"Neue Amtszeit",     en:"New term"},
+  note:       {de:"Universit&auml;res Projekt &middot; &copy; 2026 Max Michel, Minh Ha Nguyen, Vu Thuy Vy Nguyen &middot; Keine Weiterverwendung ohne Zustimmung.<br>Inspiriert vom Swipe-Entscheidungsprinzip von <cite>Reigns</cite>. Keine Verbindung zu dessen Entwickler:innen oder Rechteinhaber:innen.",
+               en:"University project &middot; &copy; 2026 Max Michel, Minh Ha Nguyen, Vu Thuy Vy Nguyen &middot; No reuse without permission.<br>Inspired by the swipe-decision mechanic of <cite>Reigns</cite>. Not affiliated with its developers or rights holders."}
+};
+
+/* ================================================================
    CHARAKTERPORTRÄTS
    Flache Inline-SVGs (Kopf + Schultern, Papier-Palette + 1 Akzent)
    ================================================================ */
@@ -746,7 +824,7 @@ function portraitSVG(inner, clipId){
 }
 
 const PORTRAITS = {
-  LOBBYISTIN: { rolle:"Die Lobbyistin", svg: portraitSVG(`
+  LOBBYISTIN: { rolle:{de:"Die Lobbyistin", en:"The Lobbyist"}, svg: portraitSVG(`
     <path d="M14 72 Q36 46 58 72 Z" fill="#C87F1D"/>
     <rect x="32" y="38" width="8" height="10" fill="${P_SKIN}"/>
     <circle cx="36" cy="30" r="13" fill="${P_SKIN}"/>
@@ -757,7 +835,7 @@ const PORTRAITS = {
     <path d="M32 38q4 3 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-lob") },
 
-  MINISTER: { rolle:"Der Minister", svg: portraitSVG(`
+  MINISTER: { rolle:{de:"Der Minister", en:"The Minister"}, svg: portraitSVG(`
     <path d="M12 72 Q36 46 60 72 Z" fill="${P_INK}"/>
     <path d="M31 50 L36 56 L41 50 L36 48 Z" fill="${P_BG}"/>
     <path d="M34 54 L36 70 L38 54 L36 52 Z" fill="#B4453A"/>
@@ -768,7 +846,7 @@ const PORTRAITS = {
     <path d="M32 37q4 2.5 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-min") },
 
-  AKTIVISTIN: { rolle:"Die Aktivistin", svg: portraitSVG(`
+  AKTIVISTIN: { rolle:{de:"Die Aktivistin", en:"The Activist"}, svg: portraitSVG(`
     <path d="M12 72 Q36 48 60 72 Z" fill="#B4453A"/>
     <rect x="31" y="38" width="8" height="9" fill="${P_SKIN}"/>
     <circle cx="34" cy="29" r="13" fill="${P_SKIN}"/>
@@ -780,7 +858,7 @@ const PORTRAITS = {
     <path d="M30 36q4 3.5 8 .5" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-akt") },
 
-  KONZERNCHEF: { rolle:"Der Konzernchef", svg: portraitSVG(`
+  KONZERNCHEF: { rolle:{de:"Der Konzernchef", en:"The CEO"}, svg: portraitSVG(`
     <path d="M12 72 Q36 45 60 72 Z" fill="${P_INK}"/>
     <rect x="29" y="42" width="14" height="8" rx="3" fill="${P_INK}"/>
     <rect x="32" y="37" width="8" height="8" fill="${P_SKIN}"/>
@@ -790,7 +868,7 @@ const PORTRAITS = {
     <path d="M33 36h6" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-kon") },
 
-  JOURNALISTIN: { rolle:"Die Journalistin", svg: portraitSVG(`
+  JOURNALISTIN: { rolle:{de:"Die Journalistin", en:"The Journalist"}, svg: portraitSVG(`
     <path d="M13 72 Q36 47 59 72 Z" fill="#3D6B8E"/>
     <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
     <path d="M20 46 Q18 14 36 13 Q54 14 52 46 L46 44 Q49 20 36 19 Q23 20 26 44 Z" fill="${P_HAIR}"/>
@@ -802,7 +880,7 @@ const PORTRAITS = {
     <path d="M32 36q4 3 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-jou") },
 
-  WISSENSCHAFTLER: { rolle:"Der Wissenschaftler", svg: portraitSVG(`
+  WISSENSCHAFTLER: { rolle:{de:"Der Wissenschaftler", en:"The Scientist"}, svg: portraitSVG(`
     <path d="M12 72 Q36 47 60 72 Z" fill="#FBF6E9" stroke="${P_INK}" stroke-width="1.8"/>
     <path d="M30 52 L36 72 M42 52 L36 72" fill="none" stroke="${P_INK}" stroke-width="1.4"/>
     <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
@@ -814,7 +892,7 @@ const PORTRAITS = {
     <path d="M32 38q4 2 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-wis") },
 
-  BUERGERIN: { rolle:"Die B&uuml;rgerin", svg: portraitSVG(`
+  BUERGERIN: { rolle:{de:"Die B&uuml;rgerin", en:"The Citizen"}, svg: portraitSVG(`
     <path d="M13 72 Q36 48 59 72 Z" fill="#4A7C59"/>
     <rect x="32" y="38" width="8" height="9" fill="${P_SKIN}"/>
     <circle cx="36" cy="29" r="13" fill="${P_SKIN}"/>
@@ -823,7 +901,7 @@ const PORTRAITS = {
     <path d="M32 36q4 3 8 0" fill="none" stroke="${P_INK}" stroke-width="1.6" stroke-linecap="round"/>
   `,"pc-bue") },
 
-  GENERAL: { rolle:"Der General", svg: portraitSVG(`
+  GENERAL: { rolle:{de:"Der General", en:"The General"}, svg: portraitSVG(`
     <path d="M12 72 Q36 46 60 72 Z" fill="#4A7C59"/>
     <rect x="16" y="56" width="10" height="5" fill="#C87F1D" stroke="${P_INK}" stroke-width="1.4"/>
     <rect x="46" y="56" width="10" height="5" fill="#C87F1D" stroke="${P_INK}" stroke-width="1.4"/>
@@ -848,16 +926,19 @@ const CARDS = [
   {
     id:"ki-basisgesetz",
     absender:"MINISTER",
-    titel:"KI-Basisgesetz",
-    text:"Das Parlament legt ein umfassendes KI-Gesetz nach EU-Vorbild vor: Risikoklassen, Auditpflichten, hohe Strafen. Die Tech-Verbände drohen mit Abwanderung.",
-    konzeptTag:"Responsible Innovation / Regulierungsdilemma",
-    links:{ label:"Verabschieden", effekte:{w:-15,v:10,g:15,s:-5},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Startup-Exodus",
-        text:"Ihre Verabschiedung des KI-Basisgesetzes aus einem früheren Amtsjahr zeigt Wirkung: Junge Unternehmen wandern in laxere Jurisdiktionen ab.",
+    titel:{de:"KI-Basisgesetz", en:"AI Framework Act"},
+    text:{de:"Das Parlament legt ein umfassendes KI-Gesetz nach EU-Vorbild vor: Risikoklassen, Auditpflichten, hohe Strafen. Die Tech-Verbände drohen mit Abwanderung.",
+          en:"Parliament tables a comprehensive AI act modelled on the EU: risk classes, audit duties, heavy fines. The tech associations threaten to relocate."},
+    konzeptTag:{de:"Responsible Innovation / Regulierungsdilemma", en:"Responsible innovation / regulatory dilemma"},
+    links:{ label:{de:"Verabschieden", en:"Pass the act"}, effekte:{w:-15,v:10,g:15,s:-5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Startup-Exodus", en:"Startup Exodus"},
+        text:{de:"Ihre Verabschiedung des KI-Basisgesetzes aus einem früheren Amtsjahr zeigt Wirkung: Junge Unternehmen wandern in laxere Jurisdiktionen ab.",
+              en:"Your passing of the AI Framework Act in an earlier year is taking effect: young companies are moving to laxer jurisdictions."},
         effekte:{w:-10} } } },
-    rechts:{ label:"Ablehnen", effekte:{w:10,v:-5},
-      verzoegert:{ nachKarten:3, ereignis:{ titel:"Deepfake-Wahlskandal ohne Rechtsgrundlage",
-        text:"Ihre Ablehnung des KI-Basisgesetzes zeigt Wirkung: Ein Deepfake erschüttert den Wahlkampf – es fehlt jede Handhabe.",
+    rechts:{ label:{de:"Ablehnen", en:"Reject it"}, effekte:{w:10,v:-5},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:{de:"Deepfake-Wahlskandal ohne Rechtsgrundlage", en:"Deepfake Election Scandal, No Legal Basis"},
+        text:{de:"Ihre Ablehnung des KI-Basisgesetzes zeigt Wirkung: Ein Deepfake erschüttert den Wahlkampf – es fehlt jede Handhabe.",
+              en:"Your rejection of the AI Framework Act is taking effect: a deepfake rocks the election campaign – and there is no legal recourse."},
         effekte:{v:-20,g:-10} } } }
   },
 
@@ -865,30 +946,35 @@ const CARDS = [
   {
     id:"gesichter-der-stadt",
     absender:"GENERAL",
-    titel:"Gesichter der Stadt",
-    text:"Die Polizei will Echtzeit-Gesichtserkennung an Bahnhöfen. Die Aufklärungsquote würde steigen. Bürgerrechtler sprechen von flächendeckender Überwachung.",
-    konzeptTag:"Boundary Critique – wer zählt als Betroffener?",
-    links:{ label:"Genehmigen", effekte:{w:5,v:5,g:-15},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"False-Positive-Skandal",
-        text:"Ihre Genehmigung der Gesichtserkennung zeigt Wirkung: Ein Unschuldiger wird aufgrund einer Fehlerkennung verhaftet.",
+    titel:{de:"Gesichter der Stadt", en:"Faces of the City"},
+    text:{de:"Die Polizei will Echtzeit-Gesichtserkennung an Bahnhöfen. Die Aufklärungsquote würde steigen. Bürgerrechtler sprechen von flächendeckender Überwachung.",
+          en:"The police want real-time facial recognition at train stations. Clearance rates would rise. Civil rights advocates call it blanket surveillance."},
+    konzeptTag:{de:"Boundary Critique – wer zählt als Betroffener?", en:"Boundary critique – who counts as affected?"},
+    links:{ label:{de:"Genehmigen", en:"Approve"}, effekte:{w:5,v:5,g:-15},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"False-Positive-Skandal", en:"False-Positive Scandal"},
+        text:{de:"Ihre Genehmigung der Gesichtserkennung zeigt Wirkung: Ein Unschuldiger wird aufgrund einer Fehlerkennung verhaftet.",
+              en:"Your approval of facial recognition is taking effect: an innocent man is arrested over a misidentification."},
         effekte:{v:-15,g:-5} } } },
-    rechts:{ label:"Untersagen", effekte:{v:-5,g:10,s:5} }
+    rechts:{ label:{de:"Untersagen", en:"Prohibit"}, effekte:{v:-5,g:10,s:5} }
   },
 
   /* ---- KARTE 3 (exakt vorgegeben) ---- */
   {
     id:"der-beste-freund",
     absender:"JOURNALISTIN",
-    titel:"Der beste Freund",
-    text:"Ein Companion-Chatbot ist die beliebteste App unter Jugendlichen. Erste Berichte über emotionale Abhängigkeit und Krisenfälle. Der Anbieter verweist auf Eigenverantwortung.",
-    konzeptTag:"Risiken sozialer KI / Fallstudie Companion-Chatbots",
-    links:{ label:"Altersverifikation + Auflagen", effekte:{w:-10,v:10,g:15},
-      verzoegert:{ nachKarten:3, ereignis:{ titel:"Flucht in Offshore-Apps",
-        text:"Ihre Auflagen für Companion-Bots zeigen Wirkung: Jugendliche weichen auf unregulierte Offshore-Apps aus.",
+    titel:{de:"Der beste Freund", en:"The Best Friend"},
+    text:{de:"Ein Companion-Chatbot ist die beliebteste App unter Jugendlichen. Erste Berichte über emotionale Abhängigkeit und Krisenfälle. Der Anbieter verweist auf Eigenverantwortung.",
+          en:"A companion chatbot is the most popular app among teenagers. First reports of emotional dependence and crisis cases. The provider points to personal responsibility."},
+    konzeptTag:{de:"Risiken sozialer KI / Fallstudie Companion-Chatbots", en:"Risks of social AI / companion-chatbot case study"},
+    links:{ label:{de:"Altersverifikation + Auflagen", en:"Age checks + conditions"}, effekte:{w:-10,v:10,g:15},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:{de:"Flucht in Offshore-Apps", en:"Flight to Offshore Apps"},
+        text:{de:"Ihre Auflagen für Companion-Bots zeigen Wirkung: Jugendliche weichen auf unregulierte Offshore-Apps aus.",
+              en:"Your conditions for companion bots are taking effect: teenagers switch to unregulated offshore apps."},
         effekte:{g:-10,s:-5} } } },
-    rechts:{ label:"Markt regeln lassen", effekte:{w:10},
-      verzoegert:{ nachKarten:3, ereignis:{ titel:"Dokumentierter Krisenfall",
-        text:"Ihr Verzicht auf Chatbot-Auflagen zeigt Wirkung: Ein dokumentierter Krisenfall löst eine Medienwelle aus.",
+    rechts:{ label:{de:"Markt regeln lassen", en:"Let the market decide"}, effekte:{w:10},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:{de:"Dokumentierter Krisenfall", en:"A Documented Crisis Case"},
+        text:{de:"Ihr Verzicht auf Chatbot-Auflagen zeigt Wirkung: Ein dokumentierter Krisenfall löst eine Medienwelle aus.",
+              en:"Your decision not to regulate chatbots is taking effect: a documented crisis case triggers a media storm."},
         effekte:{v:-20,g:-10} } } }
   },
 
@@ -896,41 +982,47 @@ const CARDS = [
   {
     id:"digitaler-rohstoff",
     absender:"KONZERNCHEF",
-    titel:"Digitaler Rohstoff",
-    text:"Ein Hyperscaler bietet an, das größte Rechenzentrum Europas zu bauen. Bedingung: subventionierter Strom und lockere Umweltauflagen. Der Hardware-Schrott ginge nach Westafrika.",
-    konzeptTag:"Digital Extractivism / Planetary Boundaries",
-    links:{ label:"Deal annehmen", effekte:{w:15,g:-10,s:10},
-      verzoegert:{ nachKarten:5, ereignis:{ titel:"Fotoreportage aus Agbogbloshie",
-        text:"Ihr Rechenzentrum-Deal zeigt Wirkung: Eine Fotoreportage zeigt Ihr Behördenlogo auf dem Elektroschrott in Ghana.",
+    titel:{de:"Digitaler Rohstoff", en:"Digital Raw Material"},
+    text:{de:"Ein Hyperscaler bietet an, das größte Rechenzentrum Europas zu bauen. Bedingung: subventionierter Strom und lockere Umweltauflagen. Der Hardware-Schrott ginge nach Westafrika.",
+          en:"A hyperscaler offers to build Europe's largest data centre. The conditions: subsidised electricity and lax environmental rules. The hardware scrap would go to West Africa."},
+    konzeptTag:{de:"Digital Extractivism / Planetary Boundaries", en:"Digital extractivism / planetary boundaries"},
+    links:{ label:{de:"Deal annehmen", en:"Accept the deal"}, effekte:{w:15,g:-10,s:10},
+      verzoegert:{ nachKarten:5, ereignis:{ titel:{de:"Fotoreportage aus Agbogbloshie", en:"Photo Essay from Agbogbloshie"},
+        text:{de:"Ihr Rechenzentrum-Deal zeigt Wirkung: Eine Fotoreportage zeigt Ihr Behördenlogo auf dem Elektroschrott in Ghana.",
+              en:"Your data-centre deal is taking effect: a photo essay shows your agency's logo on the e-waste in Ghana."},
         effekte:{v:-15} } } },
-    rechts:{ label:"Nachhaltigkeitsauflagen fordern", effekte:{w:-10,g:10,s:-5} }
+    rechts:{ label:{de:"Nachhaltigkeitsauflagen fordern", en:"Demand sustainability terms"}, effekte:{w:-10,g:10,s:-5} }
   },
 
   /* ---- KARTE 5 : Open Source vs. Exportkontrolle ---- */
   {
     id:"offene-gewichte",
     absender:"WISSENSCHAFTLER",
-    titel:"Offene Gewichte",
-    text:"Ein heimisches Labor will sein leistungsstarkes Modell frei veröffentlichen. Forscher jubeln. Der Sicherheitsrat warnt: Diese Gewichte lassen sich auch für Cyberangriffe zweckentfremden.",
-    konzeptTag:"Dual-Use / Open-Source-Governance",
-    links:{ label:"Freigabe erlauben", effekte:{w:10,s:10,g:-10},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Modell in falschen Händen",
-        text:"Ihre Freigabe der offenen Gewichte zeigt Wirkung: Eine kriminelle Gruppe nutzt das Modell für eine Phishing-Welle.",
+    titel:{de:"Offene Gewichte", en:"Open Weights"},
+    text:{de:"Ein heimisches Labor will sein leistungsstarkes Modell frei veröffentlichen. Forscher jubeln. Der Sicherheitsrat warnt: Diese Gewichte lassen sich auch für Cyberangriffe zweckentfremden.",
+          en:"A domestic lab wants to release its powerful model openly. Researchers cheer. The security council warns: these weights can also be repurposed for cyberattacks."},
+    konzeptTag:{de:"Dual-Use / Open-Source-Governance", en:"Dual use / open-source governance"},
+    links:{ label:{de:"Freigabe erlauben", en:"Allow the release"}, effekte:{w:10,s:10,g:-10},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Modell in falschen Händen", en:"Model in the Wrong Hands"},
+        text:{de:"Ihre Freigabe der offenen Gewichte zeigt Wirkung: Eine kriminelle Gruppe nutzt das Modell für eine Phishing-Welle.",
+              en:"Your release of the open weights is taking effect: a criminal group uses the model for a phishing wave."},
         effekte:{v:-10,g:-10} } } },
-    rechts:{ label:"Exportkontrolle verhängen", effekte:{w:-10,s:-5,g:10,v:5} }
+    rechts:{ label:{de:"Exportkontrolle verhängen", en:"Impose export controls"}, effekte:{w:-10,s:-5,g:10,v:5} }
   },
 
   /* ---- KARTE 6 : Race to the bottom ---- */
   {
     id:"regulierungswettlauf",
     absender:"MINISTER",
-    titel:"Der Wettlauf nach unten",
-    text:"Das Nachbarland streicht sämtliche KI-Auflagen und lockt Investoren. Ihr Wirtschaftsminister fordert, nachzuziehen, bevor Nordavia abgehängt wird.",
-    konzeptTag:"Race to the Bottom / regulatorischer Standortwettbewerb",
-    links:{ label:"Standards senken", effekte:{w:15,g:-15,v:-5} },
-    rechts:{ label:"Kurs halten", effekte:{w:-10,g:10,v:5},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Abwanderung an die Grenze",
-        text:"Ihr Festhalten am Kurs zeigt Wirkung: Zwei Konzerne verlegen ihre Zentralen ins deregulierte Nachbarland.",
+    titel:{de:"Der Wettlauf nach unten", en:"The Race to the Bottom"},
+    text:{de:"Das Nachbarland streicht sämtliche KI-Auflagen und lockt Investoren. Ihr Wirtschaftsminister fordert, nachzuziehen, bevor Nordavia abgehängt wird.",
+          en:"The neighbouring country scraps all AI rules and lures investors. Your economics minister demands you follow suit before Nordavia falls behind."},
+    konzeptTag:{de:"Race to the Bottom / regulatorischer Standortwettbewerb", en:"Race to the bottom / regulatory competition"},
+    links:{ label:{de:"Standards senken", en:"Lower standards"}, effekte:{w:15,g:-15,v:-5} },
+    rechts:{ label:{de:"Kurs halten", en:"Stay the course"}, effekte:{w:-10,g:10,v:5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Abwanderung an die Grenze", en:"Exodus Across the Border"},
+        text:{de:"Ihr Festhalten am Kurs zeigt Wirkung: Zwei Konzerne verlegen ihre Zentralen ins deregulierte Nachbarland.",
+              en:"Your staying the course is taking effect: two corporations move their headquarters to the deregulated neighbour."},
         effekte:{w:-10,s:-5} } } }
   },
 
@@ -938,126 +1030,144 @@ const CARDS = [
   {
     id:"innovationsgipfel",
     absender:"LOBBYISTIN",
-    titel:"Der Innovationsgipfel",
-    text:"Eine Allianz von Techno-Optimisten lädt Sie zum Gipfel. Ihre Botschaft: Jede Regel koste Wohlstand, Fortschritt regle sich selbst. Ein üppig dotierter Beraterposten wird angedeutet.",
-    konzeptTag:"Technikoptimismus / Capture-Gefahr",
-    links:{ label:"Deregulierungspaket zusagen", effekte:{w:15,v:-10,g:-5},
-      verzoegert:{ nachKarten:3, ereignis:{ titel:"Enthüllung der Nähe",
-        text:"Ihre Nähe zur Techno-Lobby zeigt Wirkung: Investigativjournalisten decken den Beraterposten auf.",
+    titel:{de:"Der Innovationsgipfel", en:"The Innovation Summit"},
+    text:{de:"Eine Allianz von Techno-Optimisten lädt Sie zum Gipfel. Ihre Botschaft: Jede Regel koste Wohlstand, Fortschritt regle sich selbst. Ein üppig dotierter Beraterposten wird angedeutet.",
+          en:"An alliance of techno-optimists invites you to their summit. Their message: every rule costs prosperity, progress regulates itself. A lavishly paid advisory post is hinted at."},
+    konzeptTag:{de:"Technikoptimismus / Capture-Gefahr", en:"Techno-optimism / risk of regulatory capture"},
+    links:{ label:{de:"Deregulierungspaket zusagen", en:"Promise deregulation"}, effekte:{w:15,v:-10,g:-5},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:{de:"Enthüllung der Nähe", en:"The Cosy Ties Exposed"},
+        text:{de:"Ihre Nähe zur Techno-Lobby zeigt Wirkung: Investigativjournalisten decken den Beraterposten auf.",
+              en:"Your closeness to the tech lobby is taking effect: investigative journalists uncover the advisory post."},
         effekte:{v:-15} } } },
-    rechts:{ label:"Distanz wahren", effekte:{w:-5,v:10,g:5} }
+    rechts:{ label:{de:"Distanz wahren", en:"Keep your distance"}, effekte:{w:-5,v:10,g:5} }
   },
 
   /* ---- KARTE 8 : Moratorium Frontier-KI ---- */
   {
     id:"moratorium",
     absender:"WISSENSCHAFTLER",
-    titel:"Sechs Monate Stille",
-    text:"Hunderte Forscher fordern ein Moratorium für das nächste Frontier-Modell – die Kontrollierbarkeit sei ungeklärt. Andere nennen es Panikmache und Wettbewerbssabotage.",
-    konzeptTag:"Superintelligenz-Debatte / Vorsorgeprinzip",
-    links:{ label:"Moratorium verhängen", effekte:{w:-15,v:10,g:10,s:-5},
-      verzoegert:{ nachKarten:5, ereignis:{ titel:"Fortschritt anderswo",
-        text:"Ihr Moratorium zeigt Wirkung: Das ausländische Frontier-Modell erscheint trotzdem – Nordavia schaut nur zu.",
+    titel:{de:"Sechs Monate Stille", en:"Six Months of Silence"},
+    text:{de:"Hunderte Forscher fordern ein Moratorium für das nächste Frontier-Modell – die Kontrollierbarkeit sei ungeklärt. Andere nennen es Panikmache und Wettbewerbssabotage.",
+          en:"Hundreds of researchers demand a moratorium on the next frontier model – its controllability is unresolved. Others call it scaremongering and competitive sabotage."},
+    konzeptTag:{de:"Superintelligenz-Debatte / Vorsorgeprinzip", en:"Superintelligence debate / precautionary principle"},
+    links:{ label:{de:"Moratorium verhängen", en:"Impose the moratorium"}, effekte:{w:-15,v:10,g:10,s:-5},
+      verzoegert:{ nachKarten:5, ereignis:{ titel:{de:"Fortschritt anderswo", en:"Progress Elsewhere"},
+        text:{de:"Ihr Moratorium zeigt Wirkung: Das ausländische Frontier-Modell erscheint trotzdem – Nordavia schaut nur zu.",
+              en:"Your moratorium is taking effect: the foreign frontier model launches anyway – Nordavia can only watch."},
         effekte:{s:-10,w:-5} } } },
-    rechts:{ label:"Entwicklung zulassen", effekte:{w:10,s:10,v:-10} }
+    rechts:{ label:{de:"Entwicklung zulassen", en:"Allow development"}, effekte:{w:10,s:10,v:-10} }
   },
 
   /* ---- KARTE 9 : Algorithmische Behörden-Entscheidungen ---- */
   {
     id:"algorithmus-amt",
     absender:"MINISTER",
-    titel:"Der rechnende Sachbearbeiter",
-    text:"Das Sozialamt will Anträge algorithmisch vorsortieren – schneller, günstiger. Eine Studie zeigt: Das System benachteiligt Antragsteller aus bestimmten Vierteln systematisch.",
-    konzeptTag:"Algorithmic Fairness / automatisierte Verwaltung",
-    links:{ label:"System einführen", effekte:{w:10,g:-15,v:-5},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Klagewelle",
-        text:"Ihr Behörden-Algorithmus zeigt Wirkung: Betroffene ziehen erfolgreich vor Gericht, das System wird als diskriminierend eingestuft.",
+    titel:{de:"Der rechnende Sachbearbeiter", en:"The Calculating Caseworker"},
+    text:{de:"Das Sozialamt will Anträge algorithmisch vorsortieren – schneller, günstiger. Eine Studie zeigt: Das System benachteiligt Antragsteller aus bestimmten Vierteln systematisch.",
+          en:"The welfare office wants to pre-sort applications algorithmically – faster, cheaper. A study shows: the system systematically disadvantages applicants from certain neighbourhoods."},
+    konzeptTag:{de:"Algorithmic Fairness / automatisierte Verwaltung", en:"Algorithmic fairness / automated administration"},
+    links:{ label:{de:"System einführen", en:"Introduce the system"}, effekte:{w:10,g:-15,v:-5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Klagewelle", en:"Wave of Lawsuits"},
+        text:{de:"Ihr Behörden-Algorithmus zeigt Wirkung: Betroffene ziehen erfolgreich vor Gericht, das System wird als diskriminierend eingestuft.",
+              en:"Your agency algorithm is taking effect: affected citizens win in court, and the system is ruled discriminatory."},
         effekte:{v:-10,g:-5} } } },
-    rechts:{ label:"Menschliche Prüfung vorschreiben", effekte:{w:-10,g:10,v:5} }
+    rechts:{ label:{de:"Menschliche Prüfung vorschreiben", en:"Require human review"}, effekte:{w:-10,g:10,v:5} }
   },
 
   /* ---- KARTE 10 : Gig-Economy ---- */
   {
     id:"gig-economy",
     absender:"AKTIVISTIN",
-    titel:"Die Fahrer der App",
-    text:"Eine Lieferplattform stuft ihre Fahrer als Selbstständige ein – kein Mindestlohn, keine Absicherung. Der Algorithmus verteilt die Aufträge. Die Fahrer fordern Angestelltenrechte.",
-    konzeptTag:"Plattformökonomie / algorithmisches Management",
-    links:{ label:"Als Angestellte einstufen", effekte:{w:-10,v:10,g:10},
-      verzoegert:{ nachKarten:3, ereignis:{ titel:"Plattform zieht sich zurück",
-        text:"Ihre Neueinstufung der Fahrer zeigt Wirkung: Die Plattform stellt den Betrieb in Nordavia ein, tausende verlieren ihr Einkommen.",
+    titel:{de:"Die Fahrer der App", en:"The App's Riders"},
+    text:{de:"Eine Lieferplattform stuft ihre Fahrer als Selbstständige ein – kein Mindestlohn, keine Absicherung. Der Algorithmus verteilt die Aufträge. Die Fahrer fordern Angestelltenrechte.",
+          en:"A delivery platform classifies its riders as self-employed – no minimum wage, no social security. The algorithm assigns the jobs. The riders demand employee rights."},
+    konzeptTag:{de:"Plattformökonomie / algorithmisches Management", en:"Platform economy / algorithmic management"},
+    links:{ label:{de:"Als Angestellte einstufen", en:"Classify as employees"}, effekte:{w:-10,v:10,g:10},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:{de:"Plattform zieht sich zurück", en:"Platform Pulls Out"},
+        text:{de:"Ihre Neueinstufung der Fahrer zeigt Wirkung: Die Plattform stellt den Betrieb in Nordavia ein, tausende verlieren ihr Einkommen.",
+              en:"Your reclassification of the riders is taking effect: the platform ceases operations in Nordavia, and thousands lose their income."},
         effekte:{w:-10,v:-5} } } },
-    rechts:{ label:"Selbstständigkeit bestätigen", effekte:{w:10,v:-10,g:-5} }
+    rechts:{ label:{de:"Selbstständigkeit bestätigen", en:"Confirm self-employment"}, effekte:{w:10,v:-10,g:-5} }
   },
 
   /* ---- KARTE 11 : Social-Media-Moderation ---- */
   {
     id:"moderationspflicht",
     absender:"JOURNALISTIN",
-    titel:"Der Löschknopf",
-    text:"Ein soziales Netzwerk soll schädliche Inhalte binnen einer Stunde entfernen – bei hohen Strafen. Kritiker warnen vor Overblocking und dem Ende der freien Rede.",
-    konzeptTag:"Content-Moderation / Chilling Effects",
-    links:{ label:"Löschpflicht verschärfen", effekte:{g:5,v:10,w:-5},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Overblocking-Skandal",
-        text:"Ihre verschärfte Löschpflicht zeigt Wirkung: Die Plattform entfernt vorsorglich auch legitime Satire und Journalismus.",
+    titel:{de:"Der Löschknopf", en:"The Delete Button"},
+    text:{de:"Ein soziales Netzwerk soll schädliche Inhalte binnen einer Stunde entfernen – bei hohen Strafen. Kritiker warnen vor Overblocking und dem Ende der freien Rede.",
+          en:"A social network is to remove harmful content within one hour – under heavy fines. Critics warn of overblocking and the end of free speech."},
+    konzeptTag:{de:"Content-Moderation / Chilling Effects", en:"Content moderation / chilling effects"},
+    links:{ label:{de:"Löschpflicht verschärfen", en:"Tighten removal duties"}, effekte:{g:5,v:10,w:-5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Overblocking-Skandal", en:"Overblocking Scandal"},
+        text:{de:"Ihre verschärfte Löschpflicht zeigt Wirkung: Die Plattform entfernt vorsorglich auch legitime Satire und Journalismus.",
+              en:"Your tightened removal duty is taking effect: the platform pre-emptively removes legitimate satire and journalism as well."},
         effekte:{g:-15,v:-5} } } },
-    rechts:{ label:"Auf Selbstregulierung setzen", effekte:{g:-5,v:-10,w:5} }
+    rechts:{ label:{de:"Auf Selbstregulierung setzen", en:"Rely on self-regulation"}, effekte:{g:-5,v:-10,w:5} }
   },
 
   /* ---- KARTE 12 : Autonomes Fahren ---- */
   {
     id:"autonomes-fahren",
     absender:"KONZERNCHEF",
-    titel:"Freie Fahrt",
-    text:"Ein Hersteller will Robotaxis ohne Sicherheitsfahrer zulassen. Statistisch sicherer als Menschen – aber jeder Unfall wäre eine Programmierentscheidung. Wer haftet, wenn der Code tötet?",
-    konzeptTag:"Verantwortungslücke / Moral Machine",
-    links:{ label:"Zulassung erteilen", effekte:{w:15,s:5,g:-10},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Der erste tödliche Unfall",
-        text:"Ihre Robotaxi-Zulassung zeigt Wirkung: Ein autonomes Fahrzeug verursacht einen tödlichen Unfall – die Haftungsfrage bleibt ungeklärt.",
+    titel:{de:"Freie Fahrt", en:"Free Ride"},
+    text:{de:"Ein Hersteller will Robotaxis ohne Sicherheitsfahrer zulassen. Statistisch sicherer als Menschen – aber jeder Unfall wäre eine Programmierentscheidung. Wer haftet, wenn der Code tötet?",
+          en:"A manufacturer wants robotaxis approved without safety drivers. Statistically safer than humans – but every accident would be a programming decision. Who is liable when code kills?"},
+    konzeptTag:{de:"Verantwortungslücke / Moral Machine", en:"Responsibility gap / moral machine"},
+    links:{ label:{de:"Zulassung erteilen", en:"Grant approval"}, effekte:{w:15,s:5,g:-10},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Der erste tödliche Unfall", en:"The First Fatal Accident"},
+        text:{de:"Ihre Robotaxi-Zulassung zeigt Wirkung: Ein autonomes Fahrzeug verursacht einen tödlichen Unfall – die Haftungsfrage bleibt ungeklärt.",
+              en:"Your robotaxi approval is taking effect: an autonomous vehicle causes a fatal accident – the liability question remains unresolved."},
         effekte:{v:-15,g:-5} } } },
-    rechts:{ label:"Sicherheitsfahrer vorschreiben", effekte:{w:-10,v:5,g:5} }
+    rechts:{ label:{de:"Sicherheitsfahrer vorschreiben", en:"Require safety drivers"}, effekte:{w:-10,v:5,g:5} }
   },
 
   /* ---- KARTE 13 : KI in Schulen ---- */
   {
     id:"ki-in-schulen",
     absender:"LOBBYISTIN",
-    titel:"Der Lehrer im Chip",
-    text:"Ein Bildungskonzern bietet ein KI-Tutorsystem für alle Schulen an – gratis. Bedingung: Es lernt aus den Daten der Kinder. Lehrergewerkschaften und Datenschützer schlagen Alarm.",
-    konzeptTag:"Datafizierung der Kindheit / Bildungsgerechtigkeit",
-    links:{ label:"Flächendeckend einführen", effekte:{w:5,s:-10,g:-10,v:5},
-      verzoegert:{ nachKarten:4, ereignis:{ titel:"Datenschatz in Konzernhand",
-        text:"Ihre Schul-KI zeigt Wirkung: Der Konzern besitzt nun die Bildungsprofile einer ganzen Generation und diktiert die Preise.",
+    titel:{de:"Der Lehrer im Chip", en:"The Teacher in the Chip"},
+    text:{de:"Ein Bildungskonzern bietet ein KI-Tutorsystem für alle Schulen an – gratis. Bedingung: Es lernt aus den Daten der Kinder. Lehrergewerkschaften und Datenschützer schlagen Alarm.",
+          en:"An education corporation offers an AI tutoring system for all schools – for free. The condition: it learns from the children's data. Teacher unions and privacy advocates sound the alarm."},
+    konzeptTag:{de:"Datafizierung der Kindheit / Bildungsgerechtigkeit", en:"Datafication of childhood / educational equity"},
+    links:{ label:{de:"Flächendeckend einführen", en:"Roll out nationwide"}, effekte:{w:5,s:-10,g:-10,v:5},
+      verzoegert:{ nachKarten:4, ereignis:{ titel:{de:"Datenschatz in Konzernhand", en:"A Data Trove in Corporate Hands"},
+        text:{de:"Ihre Schul-KI zeigt Wirkung: Der Konzern besitzt nun die Bildungsprofile einer ganzen Generation und diktiert die Preise.",
+              en:"Your school AI is taking effect: the corporation now owns the learning profiles of an entire generation and dictates the prices."},
         effekte:{s:-10,v:-5} } } },
-    rechts:{ label:"Ablehnen, eigene Lösung entwickeln", effekte:{w:-10,s:10,g:5} }
+    rechts:{ label:{de:"Ablehnen, eigene Lösung entwickeln", en:"Decline, build a public system"}, effekte:{w:-10,s:10,g:5} }
   },
 
   /* ---- KARTE 14 : Digital-Democracy-Plattform ---- */
   {
     id:"digitale-demokratie",
     absender:"BUERGERIN",
-    titel:"Die Stimme des Volkes",
-    text:"Eine Beteiligungsplattform soll Bürger per KI-Auswertung direkt in Gesetze einbinden. Befürworter feiern echte Teilhabe. Gegner warnen vor Manipulation und der Diktatur der Lautstärksten.",
-    konzeptTag:"Deliberative Demokratie / Partizipations-Design",
-    links:{ label:"Plattform verpflichtend machen", effekte:{v:15,w:-5,g:-5},
-      verzoegert:{ nachKarten:3, ereignis:{ titel:"Kampagne kapert die Plattform",
-        text:"Ihre Demokratie-Plattform zeigt Wirkung: Eine koordinierte Kampagne dominiert die Abstimmungen und delegitimiert das Ergebnis.",
+    titel:{de:"Die Stimme des Volkes", en:"The Voice of the People"},
+    text:{de:"Eine Beteiligungsplattform soll Bürger per KI-Auswertung direkt in Gesetze einbinden. Befürworter feiern echte Teilhabe. Gegner warnen vor Manipulation und der Diktatur der Lautstärksten.",
+          en:"A participation platform is to involve citizens directly in lawmaking via AI analysis. Supporters celebrate real participation. Opponents warn of manipulation and the dictatorship of the loudest."},
+    konzeptTag:{de:"Deliberative Demokratie / Partizipations-Design", en:"Deliberative democracy / participation design"},
+    links:{ label:{de:"Plattform verpflichtend machen", en:"Make the platform binding"}, effekte:{v:15,w:-5,g:-5},
+      verzoegert:{ nachKarten:3, ereignis:{ titel:{de:"Kampagne kapert die Plattform", en:"A Campaign Hijacks the Platform"},
+        text:{de:"Ihre Demokratie-Plattform zeigt Wirkung: Eine koordinierte Kampagne dominiert die Abstimmungen und delegitimiert das Ergebnis.",
+              en:"Your democracy platform is taking effect: a coordinated campaign dominates the votes and delegitimises the outcome."},
         effekte:{v:-15,g:-5} } } },
-    rechts:{ label:"Nur beratend zulassen", effekte:{v:5,g:5,w:-5} }
+    rechts:{ label:{de:"Nur beratend zulassen", en:"Allow it as advisory only"}, effekte:{v:5,g:5,w:-5} }
   },
 
   /* ---- KARTE 15 : Cloud-Abhängigkeit kritischer Infrastruktur ---- */
   {
     id:"cloud-abhaengigkeit",
     absender:"GENERAL",
-    titel:"Die fremde Wolke",
-    text:"Das Stromnetz soll auf die Cloud eines ausländischen Anbieters umziehen – hochmodern, günstig, zuverlässig. Der Betreiber sitzt jedoch außerhalb Ihrer Rechtsordnung.",
-    konzeptTag:"Technologische Souveränität / kritische Infrastruktur",
-    links:{ label:"Migration erlauben", effekte:{w:10,s:-15,v:5},
-      verzoegert:{ nachKarten:5, ereignis:{ titel:"Der Hebel des Anbieters",
-        text:"Ihre Cloud-Migration zeigt Wirkung: In einer diplomatischen Krise droht der Anbieter mit Drosselung – das Stromnetz als Faustpfand.",
+    titel:{de:"Die fremde Wolke", en:"The Foreign Cloud"},
+    text:{de:"Das Stromnetz soll auf die Cloud eines ausländischen Anbieters umziehen – hochmodern, günstig, zuverlässig. Der Betreiber sitzt jedoch außerhalb Ihrer Rechtsordnung.",
+          en:"The power grid is to move to a foreign provider's cloud – state of the art, cheap, reliable. But the operator sits outside your jurisdiction."},
+    konzeptTag:{de:"Technologische Souveränität / kritische Infrastruktur", en:"Technological sovereignty / critical infrastructure"},
+    links:{ label:{de:"Migration erlauben", en:"Allow the migration"}, effekte:{w:10,s:-15,v:5},
+      verzoegert:{ nachKarten:5, ereignis:{ titel:{de:"Der Hebel des Anbieters", en:"The Provider's Leverage"},
+        text:{de:"Ihre Cloud-Migration zeigt Wirkung: In einer diplomatischen Krise droht der Anbieter mit Drosselung – das Stromnetz als Faustpfand.",
+              en:"Your cloud migration is taking effect: in a diplomatic crisis the provider threatens throttling – the power grid as a bargaining chip."},
         effekte:{s:-10,v:-10} } } },
-    rechts:{ label:"Nationale Lösung erzwingen", effekte:{w:-10,s:15,v:-5} }
+    rechts:{ label:{de:"Nationale Lösung erzwingen", en:"Mandate a national solution"}, effekte:{w:-10,s:15,v:-5} }
   }
 ];
 
@@ -1065,14 +1175,22 @@ const CARDS = [
    END-SCREEN-TEXTE (je Meter × zwei Extreme)
    ================================================================ */
 const ENDINGS = {
-  w:{ low:"Der letzte Tech-Konzern verlässt Nordavia. Sie regulieren jetzt ein Museum.",
-      high:"Ungebremster Wildwuchs: Ein fehlerhaftes KI-System legt die Börse lahm. Niemand war zuständig – Sie auch nicht." },
-  g:{ low:"Leak enthüllt Totalüberwachung. Das Verfassungsgericht kassiert Ihre gesamte Amtszeit.",
-      high:"Absolute Vorsicht: Nordavia verbietet aus Prinzip. Die Bevölkerung nutzt heimlich ausländische Dienste – unreguliert." },
-  v:{ low:"Massenproteste vor Ihrer Behörde.",
-      high:"Blindes Vertrauen: Niemand hinterfragt Sie mehr. Der erste große Fehler bleibt Monate unentdeckt." },
-  s:{ low:"Nordavia ist digitale Kolonie. Die AGB schreiben andere.",
-      high:"Totale Abschottung: Der nationale Sonderweg ist inkompatibel mit dem Rest der Welt." }
+  w:{ low:{de:"Der letzte Tech-Konzern verlässt Nordavia. Sie regulieren jetzt ein Museum.",
+           en:"The last tech company leaves Nordavia. You now regulate a museum."},
+      high:{de:"Ungebremster Wildwuchs: Ein fehlerhaftes KI-System legt die Börse lahm. Niemand war zuständig – Sie auch nicht.",
+            en:"Unchecked sprawl: a faulty AI system paralyses the stock exchange. Nobody was responsible – including you."} },
+  g:{ low:{de:"Leak enthüllt Totalüberwachung. Das Verfassungsgericht kassiert Ihre gesamte Amtszeit.",
+           en:"A leak reveals total surveillance. The constitutional court strikes down your entire term."},
+      high:{de:"Absolute Vorsicht: Nordavia verbietet aus Prinzip. Die Bevölkerung nutzt heimlich ausländische Dienste – unreguliert.",
+            en:"Absolute caution: Nordavia bans on principle. The population secretly uses foreign services – unregulated."} },
+  v:{ low:{de:"Massenproteste vor Ihrer Behörde.",
+           en:"Mass protests outside your agency."},
+      high:{de:"Blindes Vertrauen: Niemand hinterfragt Sie mehr. Der erste große Fehler bleibt Monate unentdeckt.",
+            en:"Blind trust: nobody questions you anymore. The first big mistake goes unnoticed for months."} },
+  s:{ low:{de:"Nordavia ist digitale Kolonie. Die AGB schreiben andere.",
+           en:"Nordavia is a digital colony. Others write the terms of service."},
+      high:{de:"Totale Abschottung: Der nationale Sonderweg ist inkompatibel mit dem Rest der Welt.",
+            en:"Total isolation: the national go-it-alone path is incompatible with the rest of the world."} }
 };
 
 /* ================================================================
@@ -1140,28 +1258,28 @@ function showCard(card, asEvent, ausloeserJahr){
 
   if(asEvent){
     const refJahr = (ausloeserJahr != null)
-      ? `Ausl&ouml;sender Vorgang: Amtsjahr ${ausloeserJahr}` : "Wiedervorlage";
+      ? `${L(UI.eventRefPrefix)} ${ausloeserJahr}` : L(UI.eventRefFallback);
     el.innerHTML = `
-      <div class="event-stamp">Vorgang Wiedervorlage</div>
+      <div class="event-stamp">${L(UI.eventStamp)}</div>
       <div class="event-ref">${refJahr}</div>
-      <h2 class="titel">${card.titel}</h2>
-      <p class="text">${card.text}</p>
-      <div class="year">Amtsjahr ${cardCount+1}</div>`;
+      <h2 class="titel">${L(card.titel)}</h2>
+      <p class="text">${L(card.text)}</p>
+      <div class="year">${L(UI.yearWord)} ${cardCount+1}</div>`;
   }else{
     const p = PORTRAITS[card.absender] || PORTRAITS.BUERGERIN;
     el.innerHTML = `
-      <div class="stamp stamp-left">${card.links.label}</div>
-      <div class="stamp stamp-right">${card.rechts.label}</div>
+      <div class="stamp stamp-left">${L(card.links.label)}</div>
+      <div class="stamp stamp-right">${L(card.rechts.label)}</div>
       <div class="portrait">${p.svg}</div>
-      <div class="rolle">${p.rolle}</div>
-      <h2 class="titel">${card.titel}</h2>
-      <p class="text">${card.text}</p>
+      <div class="rolle">${L(p.rolle)}</div>
+      <h2 class="titel">${L(card.titel)}</h2>
+      <p class="text">${L(card.text)}</p>
       <div class="opts">
-        <span class="opt opt-left">&larr; ${card.links.label}</span>
-        <span class="opt opt-right">${card.rechts.label} &rarr;</span>
+        <span class="opt opt-left">&larr; ${L(card.links.label)}</span>
+        <span class="opt opt-right">${L(card.rechts.label)} &rarr;</span>
       </div>
-      <div class="year">Amtsjahr ${cardCount+1}</div>
-      <div class="konzept-tag">${card.konzeptTag}</div>`;
+      <div class="year">${L(UI.yearWord)} ${cardCount+1}</div>
+      <div class="konzept-tag">${L(card.konzeptTag)}</div>`;
   }
 
   stage.appendChild(el);
@@ -1287,9 +1405,9 @@ function checkGameOver(){
 function endGame(meterKey, extreme){
   if(cardCount > sessionHighscore) sessionHighscore = cardCount;
 
-  $("#endHeadline").innerHTML = ENDINGS[meterKey][extreme] + '<span class="rule"></span>';
+  $("#endHeadline").innerHTML = L(ENDINGS[meterKey][extreme]) + '<span class="rule"></span>';
   $("#endScore").textContent = cardCount;
-  $("#endHigh").textContent  = "Beste Amtszeit dieser Sitzung: " + sessionHighscore + " Amtsjahre";
+  $("#endHigh").textContent  = L(UI.highLabel) + " " + sessionHighscore + " " + L(UI.yearsWord);
   $("#end").classList.add("show");
   return true;
 }
@@ -1430,8 +1548,24 @@ $("#btnWeiter").addEventListener("click", ()=>{ if(isEvent) commitEvent(); });
 $("#btnRestart").addEventListener("click", startGame);
 $("#toggleConcept").addEventListener("click", ()=>{
   document.body.classList.toggle("concept-on");
-  $("#toggleState").textContent = document.body.classList.contains("concept-on") ? "AN" : "AUS";
+  $("#toggleState").textContent = document.body.classList.contains("concept-on") ? L(UI.on) : L(UI.off);
 });
+
+/* Sprachwahl: aktualisiert alle statischen Texte (data-i18n) sofort */
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.title = L(UI.docTitle);
+  $$("[data-i18n]").forEach(el=>{
+    const s = UI[el.dataset.i18n];
+    if(s) el.innerHTML = L(s);
+  });
+  $("#toggleState").textContent = document.body.classList.contains("concept-on") ? L(UI.on) : L(UI.off);
+  $$("#langSwitch button").forEach(b=> b.classList.toggle("active", b.dataset.lang === lang));
+}
+$$("#langSwitch button").forEach(b=>{
+  b.addEventListener("click", ()=>{ lang = b.dataset.lang; applyLang(); });
+});
+applyLang();
 
 /* Intro-Screen: Spiel startet erst nach dem Dienstantritt */
 function dismissIntro(){
